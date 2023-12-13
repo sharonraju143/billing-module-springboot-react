@@ -7,6 +7,6 @@ import com.billing.entity.Azure;
 public interface AzureService {
 
 	public List<Azure> getBillingDetailsForDuration(int months);
-	
+
 	public Long getCountOfData();
 }

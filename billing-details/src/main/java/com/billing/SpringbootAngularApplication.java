@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 
-@SpringBootApplication(exclude =  {DataSourceAutoConfiguration.class })
+@SpringBootApplication(exclude = { DataSourceAutoConfiguration.class })
 public class SpringbootAngularApplication {
 
 	public static void main(String[] args) {
@@ -14,7 +14,7 @@ public class SpringbootAngularApplication {
 	}
 
 	@Bean
-	public ModelMapper modelMapper(){
+	public ModelMapper modelMapper() {
 		return new ModelMapper();
 	}
 }

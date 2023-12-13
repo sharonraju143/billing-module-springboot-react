@@ -26,7 +26,7 @@ public class AzureServiceImpl implements AzureService {
 
 	@Override
 	public Long getCountOfData() {
-		
+
 		return azureRepository.count();
 	}
 

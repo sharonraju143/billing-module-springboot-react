@@ -25,65 +25,59 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import com.billing.filter.JwtFilter;
 import com.billing.service.UserInfoUserDetailsService;
 
-
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
 	@Autowired
 	private JwtFilter filter;
-	
-    @Bean
-    //authentication
-    public UserDetailsService userDetailsService() {
-        return new UserInfoUserDetailsService();
-    }
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return http.cors().and().csrf().disable()
-                .authorizeHttpRequests()
-                .requestMatchers("/api/users/authenticate", "/api/users/saveuser", "/api/users/login").permitAll()
-                .and()
-                .authorizeHttpRequests().requestMatchers("/api/users/**", "/api/aws/**", "/api/azure/**")
-                .authenticated().and()
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
-                .authenticationProvider(authenticationProvider())
-                .addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class)
-                .build();  
-    }
+	@Bean
+	// authentication
+	public UserDetailsService userDetailsService() {
+		return new UserInfoUserDetailsService();
+	}
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+	@Bean
+	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+		return http.cors().and().csrf().disable().authorizeHttpRequests()
+				.requestMatchers("/api/users/authenticate", "/api/users/saveuser", "/api/users/login").permitAll().and()
+				.authorizeHttpRequests().requestMatchers("/api/users/**", "/api/aws/**", "/api/azure/**")
+				.authenticated().and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+				.authenticationProvider(authenticationProvider())
+				.addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class).build();
+	}
 
-    @Bean
-    public AuthenticationProvider authenticationProvider(){
-        DaoAuthenticationProvider authenticationProvider=new DaoAuthenticationProvider();
-        authenticationProvider.setUserDetailsService(userDetailsService());
-        authenticationProvider.setPasswordEncoder(passwordEncoder());
-        return authenticationProvider;
-    }
-    
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-        return config.getAuthenticationManager();
-    }
-    
-    @Bean
-    CorsConfigurationSource corsConfigurationSource() {
-       UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-       CorsConfiguration configuration = new CorsConfiguration();
-       configuration.setAllowedOrigins(Arrays.asList("*"));  // Allow requests from any origin
-       configuration.setAllowedOriginPatterns(Collections.singletonList("*"));  // Allow requests from any origin pattern
-       configuration.setAllowedHeaders(Collections.singletonList("*"));  // Allow any headers
-       configuration.setAllowedMethods(Collections.singletonList("*"));  // Allow any HTTP methods
+	@Bean
+	public PasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder();
+	}
 
-       source.registerCorsConfiguration("/**", configuration);
-       return (CorsConfigurationSource) source;
-    }
+	@Bean
+	public AuthenticationProvider authenticationProvider() {
+		DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
+		authenticationProvider.setUserDetailsService(userDetailsService());
+		authenticationProvider.setPasswordEncoder(passwordEncoder());
+		return authenticationProvider;
+	}
+
+	@Bean
+	public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+		return config.getAuthenticationManager();
+	}
+
+	@Bean
+	CorsConfigurationSource corsConfigurationSource() {
+		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+		CorsConfiguration configuration = new CorsConfiguration();
+		configuration.setAllowedOrigins(Arrays.asList("*")); // Allow requests from any origin
+		configuration.setAllowedOriginPatterns(Collections.singletonList("*")); // Allow requests from any origin
+																				// pattern
+		configuration.setAllowedHeaders(Collections.singletonList("*")); // Allow any headers
+		configuration.setAllowedMethods(Collections.singletonList("*")); // Allow any HTTP methods
+
+		source.registerCorsConfiguration("/**", configuration);
+		return (CorsConfigurationSource) source;
+	}
 
 }

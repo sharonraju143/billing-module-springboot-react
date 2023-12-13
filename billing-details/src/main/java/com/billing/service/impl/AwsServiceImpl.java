@@ -35,7 +35,7 @@ public class AwsServiceImpl implements AwsService {
 
 		return awsRepository.findByStartDateBetween(startDateStr, currentDateStr);
 	}
-	
+
 	@Override
 	public List<Aws> getAllServices() {
 		List<Aws> awsData = awsRepository.findAll();
@@ -56,7 +56,7 @@ public class AwsServiceImpl implements AwsService {
 
 	@Override
 	public List<Aws> getDataByServiceAndDateRange(String service, String startDate, String endDate) {
-	
+
 		return awsRepository.findByServiceAndStartDateGreaterThanEqualAndEndDateLessThanEqual(service, startDate,
 				endDate);
 	}
@@ -77,14 +77,51 @@ public class AwsServiceImpl implements AwsService {
 		return awsRepository.findByServiceAndStartDateGreaterThanEqual(serviceName, startDateStr);
 	}
 
+//	@Override
+//	public List<Aws> getBillingDetails(String serviceName, String startDate, String endDate, Integer months) {
+//	    if ((startDate != null && endDate != null) || months != null) {
+//	        List<Aws> billingDetails;
+//	        if (serviceName != null && !serviceName.isEmpty()) {
+//	            // If a specific service is selected
+//	            if (startDate != null && endDate != null) {
+//	                billingDetails = getDataByServiceAndDateRange(serviceName, startDate, endDate);
+//	            } else {
+//	                billingDetails = getBillingDetailsForDuration(serviceName, months);
+//	            }
+//	        } else {
+//	            // If no specific service is selected
+//	            if (startDate != null && endDate != null || months !=null) {
+//	                billingDetails = getAllDataByDateRange(startDate, endDate, months);
+//	            } else {
+//	                billingDetails = getAllServices(); // Get all AWS billing details
+//	            }
+//	        }
+//	        return billingDetails;
+//	    } else {
+//	        return Collections.emptyList(); // Return empty list when no parameters are provided
+//	    }
+//	}
+	
 	@Override
 	public List<Aws> getBillingDetails(String serviceName, String startDate, String endDate, Integer months) {
 	    if ((startDate != null && endDate != null) || months != null) {
 	        List<Aws> billingDetails;
-	        if (startDate != null && endDate != null) {
-	            billingDetails = getDataByServiceAndDateRange(serviceName, startDate, endDate);
+	        if (serviceName != null && !serviceName.isEmpty()) {
+	            // If a specific service is selected
+	            if (startDate != null && endDate != null) {
+	                billingDetails = getDataByServiceAndDateRange(serviceName, startDate, endDate);
+	            } else {
+	                billingDetails = getBillingDetailsForDuration(serviceName, months);
+	            }
 	        } else {
-	            billingDetails = getBillingDetailsForDuration(serviceName, months);
+	            // If no specific service is selected
+	            if (startDate != null && endDate != null) {
+	                billingDetails = getAllDataByDateRange(startDate, endDate);
+	            } else if (months != null) {
+	                billingDetails = getBillingDetailsForDuration(months);
+	            } else {
+	                billingDetails = getAllServices(); // Get all AWS billing details
+	            }
 	        }
 	        return billingDetails;
 	    } else {
@@ -92,100 +129,105 @@ public class AwsServiceImpl implements AwsService {
 	    }
 	}
 
+
+	
+
 	@Override
-	public List<Map<String, Object>> getMonthlyTotalAmounts(String serviceName, String startDate, String endDate, Integer months) {
-	    if ((startDate != null && endDate != null) || months != null) {
-	        List<Aws> billingDetails;
-	        if (startDate != null && endDate != null) {
-	            billingDetails = getDataByServiceAndDateRange(serviceName, startDate, endDate);
-	        } else {
-	            billingDetails = getBillingDetailsForDuration(serviceName, months);
-	        }
+	public List<Map<String, Object>> getMonthlyTotalAmounts(String serviceName, String startDate, String endDate,
+			Integer months) {
+		if ((startDate != null && endDate != null) || months != null) {
+			List<Aws> billingDetails;
+			if (startDate != null && endDate != null) {
+				billingDetails = getDataByServiceAndDateRange(serviceName, startDate, endDate);
+			} else {
+				billingDetails = getBillingDetailsForDuration(serviceName, months);
+			}
 
-	        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-	        List<Map<String, Object>> monthlyTotalAmounts = new ArrayList<>();
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+			List<Map<String, Object>> monthlyTotalAmounts = new ArrayList<>();
 
-	        for (Aws aws : billingDetails) {
-	            Map<String, Object> monthData = new LinkedHashMap<>();
-	            String month = getMonthFromDate(aws.getStartDate(), formatter).toLowerCase();
-	            double amount = aws.getAmount();
+			for (Aws aws : billingDetails) {
+				Map<String, Object> monthData = new LinkedHashMap<>();
+				String month = getMonthFromDate(aws.getStartDate(), formatter).toLowerCase();
+				double amount = aws.getAmount();
 
-	            monthData.put("month", month);
-	            monthData.put("amount", amount);
+				monthData.put("month", month);
+				monthData.put("amount", amount);
 
-	            monthlyTotalAmounts.add(monthData);
-	        }
+				monthlyTotalAmounts.add(monthData);
+			}
 
-	        return monthlyTotalAmounts;
-	    } else {
-	        return Collections.emptyList(); // Return empty list when no parameters are provided
-	    }
+			return monthlyTotalAmounts;
+		} else {
+			return Collections.emptyList(); // Return empty list when no parameters are provided
+		}
 	}
 
 	@Override
 	public Double getTotalAmount(String serviceName, String startDate, String endDate, Integer months) {
-	    if ((startDate != null && endDate != null) || months != null) {
-	        List<Aws> billingDetails;
-	        if (startDate != null && endDate != null) {
-	            billingDetails = getDataByServiceAndDateRange(serviceName, startDate, endDate);
-	        } else {
-	            billingDetails = getBillingDetailsForDuration(serviceName, months);
-	        }
+		if ((startDate != null && endDate != null) || months != null) {
+			List<Aws> billingDetails;
+			if (startDate != null && endDate != null) {
+				billingDetails = getDataByServiceAndDateRange(serviceName, startDate, endDate);
+			} else {
+				billingDetails = getBillingDetailsForDuration(serviceName, months);
+			}
 
-	        Double totalAmount = billingDetails.stream()
-	                .mapToDouble(Aws::getAmount)
-	                .sum();
+			Double totalAmount = billingDetails.stream().mapToDouble(Aws::getAmount).sum();
 
-	        return totalAmount;
-	    } else {
-	        return 0.0; // Return 0 when no parameters are provided
-	    }
+			return totalAmount;
+		} else {
+			return 0.0; // Return 0 when no parameters are provided
+		}
 	}
 
-	
+	private String getMonthFromDate(String dateStr, DateTimeFormatter formatter) {
+		LocalDate date = LocalDate.parse(dateStr, formatter);
+		return date.getMonth().toString();
+	}
 
-	
-    private String getMonthFromDate(String dateStr, DateTimeFormatter formatter) {
-        LocalDate date = LocalDate.parse(dateStr, formatter);
-        return date.getMonth().toString();
-    }
+	@Override
+	public List<Aws> getTop5BillingDetails(String serviceName, String startDate, String endDate, Integer months) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
+	@Override
+	public String[] getUniqueServicesAsArray() {
+		List<String> uniqueServiceList = awsRepository.findDistinctByService();
+		Set<String> uniqueServiceNames = new HashSet<>();
+		List<String> formattedServiceNames = new ArrayList<>();
 
-
-		@Override
-		public List<Aws> getTop5BillingDetails(String serviceName, String startDate, String endDate, Integer months) {
-			// TODO Auto-generated method stub
-			return null;
+		for (String jsonStr : uniqueServiceList) {
+			try {
+				ObjectMapper mapper = new ObjectMapper();
+				JsonNode node = mapper.readTree(jsonStr);
+				JsonNode serviceNode = node.get("Service");
+				if (serviceNode != null) {
+					String serviceName = serviceNode.textValue();
+					if (uniqueServiceNames.add(serviceName)) {
+						String formattedService = "{ \"service\": \"" + serviceName + "\" }";
+						formattedServiceNames.add(formattedService);
+					}
+				}
+			} catch (JsonProcessingException e) {
+				e.printStackTrace();
+			}
 		}
 
-		@Override
-		public String[] getUniqueServicesAsArray() {
-		    List<String> uniqueServiceList = awsRepository.findDistinctByService();
-		    Set<String> uniqueServiceNames = new HashSet<>();
-		    List<String> formattedServiceNames = new ArrayList<>();
+		return formattedServiceNames.toArray(new String[0]);
+	}
 
-		    for (String jsonStr : uniqueServiceList) {
-		        try {
-		            ObjectMapper mapper = new ObjectMapper();
-		            JsonNode node = mapper.readTree(jsonStr);
-		            JsonNode serviceNode = node.get("Service");
-		            if (serviceNode != null) {
-		                String serviceName = serviceNode.textValue();
-		                if (uniqueServiceNames.add(serviceName)) {
-		                    String formattedService = "{ \"service\": \"" + serviceName + "\" }";
-		                    formattedServiceNames.add(formattedService);
-		                }
-		            }
-		        } catch (JsonProcessingException e) {
-		            e.printStackTrace();
-		        }
-		    }
+	@Override
+	public List<Aws> getAllDataByDateRange(String startDate, String endDate) {
+		// TODO Auto-generated method stub
+		 return awsRepository.findByStartDateGreaterThanEqualAndEndDateLessThanEqual(startDate, endDate);
+	}
 
-		    return formattedServiceNames.toArray(new String[0]);
-		}
-
-
-
-
+	@Override
+	public List<Map<String, Object>> getTop10ServicesByAmount(String startDate, String endDate, Integer months) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }

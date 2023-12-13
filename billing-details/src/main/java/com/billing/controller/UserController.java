@@ -84,23 +84,8 @@ public class UserController {
 		return new ResponseEntity<>("User successfully deleted", HttpStatus.OK);
 	}
 
-//	@PostMapping("/login")
-//	public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
-//		String userName = loginRequest.getUserName();
-//		String password = loginRequest.getPassword();
-//
-//		User user = userService.validateUser(userName, password);
-//		if (user != null) {
-//			return ResponseEntity.ok(user);
-//		} else {
-//			// Invalid username or password
-//			return ResponseEntity.status(HttpStatus.UNAUTHORIZED.value()).build();
-//		}
-//	}
-
 	@PostMapping("/authenticate")
 	public String authenticateAndGetToken(@RequestBody LoginRequest loginRequest) {
-//		System.out.println("Authenticate Method");
 		Authentication authentication = authenticationManager.authenticate(
 				new UsernamePasswordAuthenticationToken(loginRequest.getUserName(), loginRequest.getPassword()));
 		if (authentication.isAuthenticated()) {

@@ -55,10 +55,10 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public UserDto getUserByUsername(String userName) {
-	    Optional<User> optionalUser = userRepository.findByUserName(userName);
-	    User user = optionalUser.orElseThrow(() -> new ResourceNotFoundException("User not found by "+userName));
-	    UserDto dtoUser = modelMapper.map(user, UserDto.class);
-	    return dtoUser;
+		Optional<User> optionalUser = userRepository.findByUserName(userName);
+		User user = optionalUser.orElseThrow(() -> new ResourceNotFoundException("User not found by " + userName));
+		UserDto dtoUser = modelMapper.map(user, UserDto.class);
+		return dtoUser;
 	}
 
 	@Override
@@ -80,20 +80,4 @@ public class UserServiceImpl implements UserService {
 		userRepository.save(user);
 	}
 
-//	@Override
-//	public User validateUser(String userName, String password) {
-//////		User user = userRepository.findByUsername(userName);
-//////		if (user != null && user.getPassword().equals(password)) {
-//////			return user;
-//////		}
-//////		return null;
-////		
-//		User user = userRepository.findByUsername(userName).get();
-//	    if (user != null && user.getPassword().equals(password)) {
-//	        return user;
-//	    }
-//	    else {
-//		    return null;
-//	    }
-//	}
 }

@@ -11,7 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import com.billing.entity.User;
 
-public class UserInfoUserDetails implements UserDetails{
+public class UserInfoUserDetails implements UserDetails {
 
 	/**
 	 * 
@@ -20,16 +20,16 @@ public class UserInfoUserDetails implements UserDetails{
 	private String userName;
 	private String password;
 	private List<GrantedAuthority> authorities;
-	
+
 	public UserInfoUserDetails(User user) {
 		userName = user.getUserName();
 		password = user.getPassword();
-		authorities = Arrays.stream(user.getRoles().split(","))
-				.map(SimpleGrantedAuthority::new)
+		authorities = Arrays.stream(user.getRoles().split(",")).map(SimpleGrantedAuthority::new)
 				.collect(Collectors.toList());
 	}
+
 	@Override
-	public Collection<	? extends GrantedAuthority> getAuthorities() {
+	public Collection<? extends GrantedAuthority> getAuthorities() {
 		// TODO Auto-generated method stub
 		return authorities;
 	}
@@ -69,5 +69,5 @@ public class UserInfoUserDetails implements UserDetails{
 		// TODO Auto-generated method stub
 		return true;
 	}
-	
+
 }
