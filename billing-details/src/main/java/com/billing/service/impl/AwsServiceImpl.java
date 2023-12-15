@@ -4,11 +4,15 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -77,87 +81,80 @@ public class AwsServiceImpl implements AwsService {
 		return awsRepository.findByServiceAndStartDateGreaterThanEqual(serviceName, startDateStr);
 	}
 
-//	@Override
-//	public List<Aws> getBillingDetails(String serviceName, String startDate, String endDate, Integer months) {
-//	    if ((startDate != null && endDate != null) || months != null) {
-//	        List<Aws> billingDetails;
-//	        if (serviceName != null && !serviceName.isEmpty()) {
-//	            // If a specific service is selected
-//	            if (startDate != null && endDate != null) {
-//	                billingDetails = getDataByServiceAndDateRange(serviceName, startDate, endDate);
-//	            } else {
-//	                billingDetails = getBillingDetailsForDuration(serviceName, months);
-//	            }
-//	        } else {
-//	            // If no specific service is selected
-//	            if (startDate != null && endDate != null || months !=null) {
-//	                billingDetails = getAllDataByDateRange(startDate, endDate, months);
-//	            } else {
-//	                billingDetails = getAllServices(); // Get all AWS billing details
-//	            }
-//	        }
-//	        return billingDetails;
-//	    } else {
-//	        return Collections.emptyList(); // Return empty list when no parameters are provided
-//	    }
-//	}
-	
-	@Override
-	public List<Aws> getBillingDetails(String serviceName, String startDate, String endDate, Integer months) {
-	    if ((startDate != null && endDate != null) || months != null) {
-	        List<Aws> billingDetails;
-	        if (serviceName != null && !serviceName.isEmpty()) {
-	            // If a specific service is selected
-	            if (startDate != null && endDate != null) {
-	                billingDetails = getDataByServiceAndDateRange(serviceName, startDate, endDate);
-	            } else {
-	                billingDetails = getBillingDetailsForDuration(serviceName, months);
-	            }
-	        } else {
-	            // If no specific service is selected
-	            if (startDate != null && endDate != null) {
-	                billingDetails = getAllDataByDateRange(startDate, endDate);
-	            } else if (months != null) {
-	                billingDetails = getBillingDetailsForDuration(months);
-	            } else {
-	                billingDetails = getAllServices(); // Get all AWS billing details
-	            }
-	        }
-	        return billingDetails;
-	    } else {
-	        return Collections.emptyList(); // Return empty list when no parameters are provided
-	    }
-	}
-
-
-	
-
 	@Override
 	public List<Map<String, Object>> getMonthlyTotalAmounts(String serviceName, String startDate, String endDate,
 			Integer months) {
+		List<Aws> billingDetails;
+
 		if ((startDate != null && endDate != null) || months != null) {
-			List<Aws> billingDetails;
-			if (startDate != null && endDate != null) {
-				billingDetails = getDataByServiceAndDateRange(serviceName, startDate, endDate);
+			if (serviceName != null && !serviceName.isEmpty()) {
+				// If a specific service is selected
+				if (startDate != null && endDate != null) {
+					billingDetails = getDataByServiceAndDateRange(serviceName, startDate, endDate);
+				} else {
+					billingDetails = getBillingDetailsForDuration(serviceName, months);
+				}
 			} else {
-				billingDetails = getBillingDetailsForDuration(serviceName, months);
+				// If no specific service is selected
+				if (months != null) {
+					billingDetails = getBillingDetailsForDuration(months); // Fetch data by duration
+				} else if (startDate != null && endDate != null) {
+					billingDetails = getAllDataByDateRange(startDate, endDate); // Fetch data by date range
+				} else {
+					return Collections.emptyList(); // No parameters provided, return empty list
+				}
 			}
 
 			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-			List<Map<String, Object>> monthlyTotalAmounts = new ArrayList<>();
+			Map<String, Double> monthlyAmounts = new TreeMap<>();
 
 			for (Aws aws : billingDetails) {
-				Map<String, Object> monthData = new LinkedHashMap<>();
-				String month = getMonthFromDate(aws.getStartDate(), formatter).toLowerCase();
+				String month = getMonthFromDate(aws.getStartDate(), formatter); // Get month from date
 				double amount = aws.getAmount();
 
-				monthData.put("month", month);
-				monthData.put("amount", amount);
-
-				monthlyTotalAmounts.add(monthData);
+				// If the month exists in the map, add the amount to the existing total
+				if (monthlyAmounts.containsKey(month)) {
+					double totalAmount = monthlyAmounts.get(month);
+					totalAmount += amount;
+					monthlyAmounts.put(month, totalAmount);
+				} else {
+					// If the month doesn't exist, add a new entry in the map
+					monthlyAmounts.put(month, amount);
+				}
 			}
+			Map<String, Integer> monthOrder = new LinkedHashMap<>();
+			monthOrder.put("JANUARY", 1);
+			monthOrder.put("FEBRUARY", 2);
+			monthOrder.put("MARCH", 3);
+			monthOrder.put("APRIL", 4);
+			monthOrder.put("MAY", 5);
+			monthOrder.put("JUNE", 6);
+			monthOrder.put("JULY", 7);
+			monthOrder.put("AUGUST", 8);
+			monthOrder.put("SEPTEMBER", 9);
+			monthOrder.put("OCTOBER", 10);
+			monthOrder.put("NOVEMBER", 11);
+			monthOrder.put("DECEMBER", 12);
 
-			return monthlyTotalAmounts;
+			// Prepare the aggregated monthly total amounts list to return
+			List<Map<String, Object>> aggregatedMonthlyTotalAmounts = new ArrayList<>();
+
+			monthlyAmounts.entrySet().stream().sorted(Comparator.comparingInt(entry -> monthOrder.get(entry.getKey())))
+					.forEach(entry -> {
+						Map<String, Object> monthData = new HashMap<>();
+						monthData.put("month", entry.getKey());
+						monthData.put("amount", entry.getValue());
+						aggregatedMonthlyTotalAmounts.add(monthData);
+					});
+
+//	        for (Map.Entry<String, Double> entry : monthlyAmounts.entrySet()) {
+//	            Map<String, Object> monthData = new HashMap<>();
+//	            monthData.put("month", entry.getKey());
+//	            monthData.put("amount", entry.getValue());
+//	            aggregatedMonthlyTotalAmounts.add(monthData);
+//	        }
+			return aggregatedMonthlyTotalAmounts;
+
 		} else {
 			return Collections.emptyList(); // Return empty list when no parameters are provided
 		}
@@ -165,16 +162,28 @@ public class AwsServiceImpl implements AwsService {
 
 	@Override
 	public Double getTotalAmount(String serviceName, String startDate, String endDate, Integer months) {
+		List<Aws> billingDetails;
+
 		if ((startDate != null && endDate != null) || months != null) {
-			List<Aws> billingDetails;
-			if (startDate != null && endDate != null) {
-				billingDetails = getDataByServiceAndDateRange(serviceName, startDate, endDate);
+			if (serviceName != null && !serviceName.isEmpty()) {
+				// If a specific service is selected
+				if (startDate != null && endDate != null) {
+					billingDetails = getDataByServiceAndDateRange(serviceName, startDate, endDate);
+				} else {
+					billingDetails = getBillingDetailsForDuration(serviceName, months);
+				}
 			} else {
-				billingDetails = getBillingDetailsForDuration(serviceName, months);
+				// If no specific service is selected
+				if (months != null) {
+					billingDetails = getBillingDetailsForDuration(months); // Fetch data by duration
+				} else if (startDate != null && endDate != null) {
+					billingDetails = getAllDataByDateRange(startDate, endDate); // Fetch data by date range
+				} else {
+					return 0.0; // No parameters provided, return 0.0
+				}
 			}
 
 			Double totalAmount = billingDetails.stream().mapToDouble(Aws::getAmount).sum();
-
 			return totalAmount;
 		} else {
 			return 0.0; // Return 0 when no parameters are provided
@@ -184,12 +193,6 @@ public class AwsServiceImpl implements AwsService {
 	private String getMonthFromDate(String dateStr, DateTimeFormatter formatter) {
 		LocalDate date = LocalDate.parse(dateStr, formatter);
 		return date.getMonth().toString();
-	}
-
-	@Override
-	public List<Aws> getTop5BillingDetails(String serviceName, String startDate, String endDate, Integer months) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override
@@ -216,18 +219,101 @@ public class AwsServiceImpl implements AwsService {
 		}
 
 		return formattedServiceNames.toArray(new String[0]);
+
 	}
 
 	@Override
 	public List<Aws> getAllDataByDateRange(String startDate, String endDate) {
 		// TODO Auto-generated method stub
-		 return awsRepository.findByStartDateGreaterThanEqualAndEndDateLessThanEqual(startDate, endDate);
+		return awsRepository.findByStartDateGreaterThanEqualAndEndDateLessThanEqual(startDate, endDate);
 	}
 
 	@Override
-	public List<Map<String, Object>> getTop10ServicesByAmount(String startDate, String endDate, Integer months) {
-		// TODO Auto-generated method stub
-		return null;
+	public List<Map<String, Object>> getTop10Services(List<Aws> billingDetails) {
+		// Create a map to store the total amount for each service
+		Map<String, Double> serviceAmountMap = new HashMap<>();
+
+		// Calculate the total amount for each service
+		for (Aws aws : billingDetails) {
+			String serviceName = aws.getService();
+			double amount = aws.getAmount();
+
+			// If the service already exists in the map, add the amount to its total
+			// Otherwise, create a new entry for the service
+			if (serviceAmountMap.containsKey(serviceName)) {
+				double totalAmount = serviceAmountMap.get(serviceName) + amount;
+				serviceAmountMap.put(serviceName, totalAmount);
+			} else {
+				serviceAmountMap.put(serviceName, amount);
+			}
+		}
+
+		// Sort the services by their total amount in descending order
+		List<Map.Entry<String, Double>> sortedServices = serviceAmountMap.entrySet().stream()
+				.sorted(Map.Entry.<String, Double>comparingByValue().reversed()).collect(Collectors.toList());
+
+		// Fetch the top 10 services based on their amounts
+		List<Map<String, Object>> top10Services = new ArrayList<>();
+		int count = 0;
+		for (Map.Entry<String, Double> entry : sortedServices) {
+			if (count < 5) {
+				Map<String, Object> serviceData = new LinkedHashMap<>();
+				serviceData.put("serviceName", entry.getKey());
+				serviceData.put("amount", entry.getValue());
+				top10Services.add(serviceData);
+				count++;
+			} else {
+				break; // Exit loop after fetching the top 10 services
+			}
+		}
+
+		return top10Services;
+	}
+
+	@Override
+	public List<Aws> getBillingDetails(String serviceName, String startDate, String endDate, Integer months) {
+		List<Aws> billingDetails;
+
+		if ((startDate != null && endDate != null) || months != null) {
+			if (serviceName != null && !serviceName.isEmpty()) {
+				// If a specific service is selected
+				if (startDate != null && endDate != null) {
+					billingDetails = getDataByServiceAndDateRange(serviceName, startDate, endDate);
+				} else {
+					billingDetails = getBillingDetailsForDuration(serviceName, months);
+				}
+			} else {
+				// If no specific service is selected
+				if (startDate != null && endDate != null) {
+					billingDetails = getAllDataByDateRange(startDate, endDate);
+				} else if (months != null) {
+					billingDetails = getBillingDetailsForDuration(months);
+				} else {
+					billingDetails = getAllServices(); // Get all AWS billing details
+				}
+			}
+		} else {
+			return Collections.emptyList(); // Return empty list when no parameters are provided
+		}
+
+		// Fetch top 10 services based on their amounts
+		List<Map<String, Object>> top10Services = new ArrayList<>();
+		if (serviceName == null || serviceName.isEmpty()) {
+
+			top10Services = getTop10Services(billingDetails);
+		}
+
+		// Prepare the response map
+		Map<String, Object> response = new LinkedHashMap<>();
+		response.put("billingDetails", billingDetails);
+		response.put("monthlyTotalAmounts", getMonthlyTotalAmounts(serviceName, startDate, endDate, months));
+		response.put("totalAmount", getTotalAmount(serviceName, startDate, endDate, months));
+
+		if (!top10Services.isEmpty()) {
+			response.put("top10Services", top10Services);
+		}
+
+		return billingDetails;
 	}
 
 }
