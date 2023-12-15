@@ -72,3 +72,14 @@ color: rgb(69, 4, 129);
 	text-align: center;
 	padding-top: 0px;
 }
+
+.chart-home{
+	display: flex;
+  justify-content: center;
+  align-items: center;
+  /* Add other styles as needed */
+  /* For example, you can set width or max-width for the container */
+  width: 100%;
+  max-width: 1200px; /* Adjust the maximum width as desired */
+  margin: 0 auto;
+}

@@ -7,6 +7,8 @@ import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import { awsCountService, azureCountService } from "../services/Services";
+import BarsDataset from "../components/HomeBarChart";
+
 
 export const Home = () => {
   const [awsCount, setAwsCount] = useState("");
@@ -44,7 +46,15 @@ export const Home = () => {
         <Sidenav />
 
         <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-          <Grid container spacing={3}>
+
+          
+       
+
+            <div className="chart-home">
+                <BarsDataset/>
+                </div>
+            
+          {/* <Grid container spacing={3}>
             <Grid item xs={4}>
               <Card className="felee" sx={{ maxWidth: 345 , backgroundColor:"#d3d3f3"}}>
                 <CardContent>
@@ -105,7 +115,7 @@ export const Home = () => {
                 </CardContent>
               </Card>
             </Grid>
-          </Grid>
+          </Grid> */}
         </Box>
       </Box>
     </div>
