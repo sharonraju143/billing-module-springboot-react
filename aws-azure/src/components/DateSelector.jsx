@@ -4,14 +4,14 @@ const DateRangeComponent = ({handleStartDateChange,handleEndDateChange,dateRange
   return (
     <div>
       <label>Start Date:</label>
-      <input className='dates' disabled={DateDisabled()}
+      <input className='dates' 
         type="date"
         value={dateRange.startDate}
         onChange={handleStartDateChange}
       />
 
       <label>End Date:</label>
-      <input className='dates' disabled={DateDisabled()}
+      <input className='dates'
         type="date"
         value={dateRange.endDate}
         onChange={handleEndDateChange}

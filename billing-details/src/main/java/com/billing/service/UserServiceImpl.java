@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import com.billing.dto.UserDto;
 import com.billing.entity.User;
 import com.billing.exception.ResourceNotFoundException;
+import com.billing.exception.UsernameAlreadyExistsException;
 import com.billing.repository.UserRepository;
 
 @Service
@@ -26,17 +27,37 @@ public class UserServiceImpl implements UserService {
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 
+//	@Override
+//	public UserDto createUser(UserDto userDto) {
+//		User user = modelMapper.map(userDto, User.class);
+//		user.setRoles("ROLE_USER");
+//		user.setPassword(passwordEncoder.encode(user.getPassword()));
+//		user.setId(UUID.randomUUID().toString());
+//		user.setActive(true);
+//		User saveduser = userRepository.save(user);
+//		UserDto savedUserDto = modelMapper.map(saveduser, UserDto.class);
+//		return savedUserDto;
+//	}
+	
+
 	@Override
 	public UserDto createUser(UserDto userDto) {
-		User user = modelMapper.map(userDto, User.class);
-		user.setRoles("ROLE_USER");
-		user.setPassword(passwordEncoder.encode(user.getPassword()));
-		user.setId(UUID.randomUUID().toString());
-		user.setActive(true);
-		User saveduser = userRepository.save(user);
-		UserDto savedUserDto = modelMapper.map(saveduser, UserDto.class);
-		return savedUserDto;
+	    // Check if the username already exists in the database
+	    if (userRepository.existsByUserName(userDto.getUserName())) {
+	        throw new UsernameAlreadyExistsException("Username already exists");
+	    }
+
+	    // Proceed with user creation if the username doesn't exist
+	    User user = modelMapper.map(userDto, User.class);
+	    user.setRoles("ROLE_USER");
+	    user.setPassword(passwordEncoder.encode(user.getPassword()));
+	    user.setId(UUID.randomUUID().toString());
+	    user.setActive(true);
+	    
+	    User savedUser = userRepository.save(user);
+	    return modelMapper.map(savedUser, UserDto.class);
 	}
+
 
 	@Override
 	public List<UserDto> getAllUsers() {

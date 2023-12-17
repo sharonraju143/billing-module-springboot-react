@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.billing.dto.UserDto;
 import com.billing.entity.LoginRequest;
+import com.billing.exception.UsernameAlreadyExistsException;
 import com.billing.service.UserService;
 import com.billing.util.JwtUtil;
 
@@ -41,11 +42,18 @@ public class UserController {
 	private AuthenticationManager authenticationManager;
 
 	@PostMapping("/saveuser")
-	public ResponseEntity<UserDto> createUser(@RequestBody UserDto user) {
-		System.out.println("SAVE METHOD STARTED");
-		UserDto saveduser = userService.createUser(user);
-		System.out.println("SAVE METHOD ENDED" + saveduser);
-		return new ResponseEntity<>(saveduser, HttpStatus.CREATED);
+	public ResponseEntity<?> createUser(@RequestBody UserDto user) {
+		try {
+			// Attempt to create a user
+			UserDto savedUser = userService.createUser(user);
+			return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
+		} catch (UsernameAlreadyExistsException e) {
+			// Username already exists - handle this exception
+			return new ResponseEntity<>("Username already exists", HttpStatus.CONFLICT);
+		} catch (Exception e) {
+			// Other unexpected exceptions
+			return new ResponseEntity<>("Failed to create user", HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
 
 	@GetMapping("/getallusers")

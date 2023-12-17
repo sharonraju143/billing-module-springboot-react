@@ -11,4 +11,6 @@ import com.billing.entity.User;
 public interface UserRepository extends MongoRepository<User, String> {
 
 	Optional<User> findByUserName(String userName);
+	
+	 boolean existsByUserName(String userName);
 }

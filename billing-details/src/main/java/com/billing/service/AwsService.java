@@ -11,8 +11,6 @@ public interface AwsService {
 
 	public List<Aws> getBillingDetailsForDuration(int months);
 
-	// public List<String> getAllServices();
-
 	public List<Aws> getAllDataByDateRange(String startDate, String endDate);
 
 	public String[] getUniqueServicesAsArray();
@@ -24,7 +22,6 @@ public interface AwsService {
 
 	public Double getTotalAmount(String serviceName, String startDate, String endDate, Integer months);
 
-
 	public Long getCountOfData();
 
 	public List<Aws> getDataByServiceAndDateRange(String service, String startDate, String endDate);
@@ -34,9 +31,6 @@ public interface AwsService {
 	public List<Aws> getBillingDetailsForDuration(String service, int months);
 
 	public List<Aws> getBillingDetails(String serviceName, String startDate, String endDate, Integer months);
-
-	// public List<Map<String, Object>> getTop10ServicesByAmount(String startDate,
-	// String endDate, Integer months);
 
 	public List<Map<String, Object>> getTop10Services(List<Aws> billingDetails);
 }

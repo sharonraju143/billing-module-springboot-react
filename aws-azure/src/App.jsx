@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import "./App.css";
 import { Routes, Route, BrowserRouter } from "react-router-dom";
 import Home from "./pages/Home";
@@ -13,13 +13,19 @@ import Login from "./authenticate/Login";
 import Signup from "./authenticate/Signup";
 
 function App() {
+
+const [display1,setDisplay1]=useState("")
+
+  function info2(a){
+    setDisplay1(a)
+  }
   return (
     <>
       <BrowserRouter>
         <Routes>
           <Route element={<ProtectedRoute />}>
             <Route path="/home" exact element={<Home />}></Route>
-            <Route path="/awspage" exact element={<Awspage />}></Route>
+            <Route path="/awspage" exact element={<Awspage/>}></Route>
             <Route path="/azurepage" exact element={<AzurePage />}></Route>
             <Route path="/gcppage" exact element={<GcpPage />}></Route>
             <Route path="/gitpage" exact element={<GitPage />}></Route>
