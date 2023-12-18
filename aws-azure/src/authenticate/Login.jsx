@@ -15,13 +15,11 @@ import { ButtonComponent } from "./ButtonComponent";
 import { VisibilityOff, Visibility } from "@mui/icons-material";
 import { UserLoginService } from "../services/Services";
 import { Link, useNavigate} from "react-router-dom";
-//import { useHistory } from 'react-router-dom';
+
 
 
 const Login = () => {
-
- // const history = useHistory();
-
+  
   const theme = createTheme({
     palette: {
       type: "light",
@@ -55,33 +53,27 @@ const Login = () => {
 
   const forSubmit = async () => {
     if (form.userName && form.password) {
-      try {
-        console.log(form);
-        setForm({ userName: "", password: "" });
-        const res = await UserLoginService(form);
-        console.log(res);
+      
+ 
+         UserLoginService(form).then((res) => {
+          console.log(res);
+          setForm({ userName: "", password: "" });
+       
         localStorage.setItem("token", res?.token);
         localStorage.setItem("userName", form?.userName);
         toast.success(`Welcome ${form.userName}`);
         navigate("/home");
-      } catch (err) {
-        toast.error("Invalid Login Details")
-      }
-
+         }).catch((err) => {
+          toast.error("Invalid Login Details")
+         })
       
     } else {
       toast.error("Please fill in all fields");
+      return
     }
   };
 
-  // useEffect(() => {
-  //   // Listen for changes in the route and refresh the page if it's the home route
-  //   return history.listen((location) => {
-  //     if (location.pathname === "/home") {
-  //       window.location.reload(); // Refresh the page
-  //     }
-  //   });
-  // }, [history]);
+ 
 
   return (
     <React.Fragment>

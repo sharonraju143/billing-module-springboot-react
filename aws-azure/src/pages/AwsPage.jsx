@@ -13,6 +13,7 @@ import Typography from "@mui/material/Typography";
 import BarChat from "../components/BarChart";
 import ServicesChart from "../components/ServicesChart";
 import ServicesPieChart from "../components/servicesPiechart";
+import toast from "react-hot-toast";
 // import { truncateByDomain } from "recharts/types/util/ChartUtils";
 
 export const AwsPage = () => {
@@ -69,6 +70,12 @@ export const AwsPage = () => {
     setDisplay(false);
   };
 
+  const handleSubmitClicked = () => {
+    forAwsGet(); // Call the function to fetch data
+    updateLocalStorage(); // Update local storage with current values
+    setSubmitClicked(false); // Reset submitClicked state after handling submit action
+  };
+
   const handleServiceChange = (event) => {
     setService(event.target.value);
   };
@@ -78,18 +85,22 @@ export const AwsPage = () => {
   };
 
   const forAwsGet = async () => {
-    try {
-      const res = await awsService(
+    
+       awsService(
         service,
         dateRange.startDate,
         dateRange.endDate,
         months
-      );
-      console.log(res);
-      setData(res);
-    } catch (error) {
+      ).then(res => {
+        console.log(res);
+        setData(res);
+        if(res.message == "No billing details available."){  
+          toast.error("Please select duration")
+        }
+      
+      }).catch ((error)  =>{
       console.log(error);
-    }
+    })
   };
 
   const bodyStyle = {
@@ -137,13 +148,13 @@ export const AwsPage = () => {
     localStorage.setItem("months", months);
   };
 
-  useEffect(() => {
-    if (submitClicked) {
-      forAwsGet();
-      updateLocalStorage();
-      setSubmitClicked(false);
-    }
-  }, [submitClicked]);
+  // useEffect(() => {
+  //   if (submitClicked) {
+  //     forAwsGet();
+  //     updateLocalStorage();
+  //     setSubmitClicked(false);
+  //   }
+  // }, [submitClicked]);
   // }, [service, dateRange.endDate, dateRange.startDate, months]);
 
   return (
@@ -192,7 +203,7 @@ export const AwsPage = () => {
                     />
                   </Grid>
 
-                  <Grid item xs={12} sm={6} md={6} lg={2} xl={2}>
+                  <Grid item xs={12} sm={6} md={6} lg={2} xl={1.9}>
                     <h5>select Duration</h5>
                     <DurationSelector
                       handleMonthChange={handleMonthChange}
@@ -209,7 +220,7 @@ export const AwsPage = () => {
                     <Button
                       variant="contained"
                       color="primary"
-                      onClick={() => setSubmitClicked(true)}
+                      onClick={handleSubmitClicked}
                     >
                       Submit
                     </Button>
@@ -290,7 +301,7 @@ export const AwsPage = () => {
                     lg={12}
                     className="mx-auto mx-sm-0"
                   >
-                    <AwsTable data={data.billingDetails} />
+                    <AwsTable data={data?.billingDetails} />
                   </Grid>
                 </Grid>
               </Box>

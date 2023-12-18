@@ -1,8 +1,10 @@
 import axios from "axios";
+import toast from "react-hot-toast";
 
-const token = localStorage.getItem("token");
 
 export const azureService = async (month) => {
+  
+const token = localStorage.getItem("token");
   const response = await axios.get(
     `http://localhost:9070/api/azure/month?months=${month}`,
     {
@@ -16,20 +18,29 @@ export const azureService = async (month) => {
 };
 
 export const awsService = async (service , startDate , endDate,months) => {
-  console.log(months);
+  
+const token = localStorage.getItem("token");
+  console.log(token, "token");
+  if(token) {
   const response = await axios.get(
-    months===0?`http://localhost:9070/api/aws/billing-details?service=${service}&startDate=${startDate}&endDate=${endDate}` : `http://localhost:9070/api/aws/billing-details?service=${service}&months=${months}`,
+    months==0?`http://localhost:9070/api/aws/billing-details?service=${service}&startDate=${startDate}&endDate=${endDate}` : `http://localhost:9070/api/aws/billing-details?service=${service}&months=${months}`,
     {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
     }
-  );
-  return response.data;
+  )
+  return response.data
+}else{
+  toast.error("Null Token")
+}
+
 };
 
 export const awsFetch = async (service, month) => {
+  
+const token = localStorage.getItem("token");
   const response = await axios.get(
     `http://localhost:9070/api/aws/service/month?service=${service}&months=${month}`,
 
@@ -44,6 +55,8 @@ export const awsFetch = async (service, month) => {
 };
 
 export const awsCountService = async () => {
+  
+const token = localStorage.getItem("token");
   const response = await axios.get(`http://localhost:9070/api/aws/data/count`, {
     headers: {
       "Content-Type": "application/json",
@@ -54,6 +67,8 @@ export const awsCountService = async () => {
 };
 
 export const azureCountService = async () => {
+  
+const token = localStorage.getItem("token");
   const response = await axios.get(
     `http://localhost:9070/api/azure/data/count`,
     {
@@ -67,6 +82,8 @@ export const azureCountService = async () => {
 };
 
 export const UserSignUpService = async (data) => {
+  
+const token = localStorage.getItem("token");
   const response = await axios.post(
     `http://localhost:9070/api/users/saveuser`,
     data
@@ -75,6 +92,8 @@ export const UserSignUpService = async (data) => {
 };
 
 export const UserLoginService = async (data) => {
+  
+const token = localStorage.getItem("token");
   const response = await axios.post(
     `http://localhost:9070/api/users/authenticate`,
     data
@@ -83,6 +102,8 @@ export const UserLoginService = async (data) => {
 };
 
 export const listService = async () => {
+  
+const token = localStorage.getItem("token");
   const response = await axios.get(`http://localhost:9070/api/aws/distinct-services`, {
     headers: {
       "Content-Type": "application/json",
