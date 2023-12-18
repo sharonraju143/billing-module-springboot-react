@@ -95,7 +95,7 @@ export const AwsPage = () => {
         console.log(res);
         setData(res);
         if(res.message == "No billing details available."){  
-          toast.error("Please select duration")
+          toast.error("Please select required fields")
         }
       
       }).catch ((error)  =>{
@@ -148,14 +148,6 @@ export const AwsPage = () => {
     localStorage.setItem("months", months);
   };
 
-  // useEffect(() => {
-  //   if (submitClicked) {
-  //     forAwsGet();
-  //     updateLocalStorage();
-  //     setSubmitClicked(false);
-  //   }
-  // }, [submitClicked]);
-  // }, [service, dateRange.endDate, dateRange.startDate, months]);
 
   return (
     <div style={bodyStyle}>

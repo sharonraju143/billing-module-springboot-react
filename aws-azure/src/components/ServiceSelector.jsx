@@ -1,22 +1,42 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FormControl, Select, MenuItem } from "@mui/material";
+import axios from "axios";
 
 const ServiceSelector = ({ service, handleServiceChange }) => {
-  const serviceOptions = [
-    null,
-    "AWS CloudShell",
-    "Tax",
-    "EC2 - Other",
-    "Amazon Virtual Private Cloud",
-    "Amazon Elastic Compute Cloud - Compute",
-    "AWS Cost Explorer",
-    "AWS Key Management Service",
-    "Amazon Relational Database Service",
-    "Amazon Simple Storage Service",
-    "AmazonCloudWatch",
-  ];
+  const [serviceOptions, setServiceOptions] = useState([]);
+  const [clicked, setClicked] = useState(false);
 
-  //const[list,setList]=useState([])
+  useEffect(() => {
+    const fetchServiceOptions = async () => {
+      try {
+        const token = localStorage.getItem("token");
+
+        if (token && !clicked) {
+          const config = {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          };
+
+          const response = await axios.get("http://localhost:9070/api/aws/distinct-services", config);
+          setServiceOptions(response.data);
+          setClicked(true);
+        } else {
+          console.error("Token not found in localStorage or options already fetched");
+        }
+      } catch (error) {
+        console.error("Error fetching service options:", error);
+      }
+    };
+
+    fetchServiceOptions();
+  }, [clicked]);
+
+  const handleFocus = () => {
+    if (!clicked) {
+      setClicked(true);
+    }
+  };
 
   const newPropsCss = {
     backgroundColor: "#FFFF",
@@ -39,10 +59,11 @@ const ServiceSelector = ({ service, handleServiceChange }) => {
           fullWidth
           sx={{ ...newPropsCss, height: "2.4em" }}
           labelId="service-label"
-          value={service}
+          value={service || ""}
           onChange={handleServiceChange}
+          onFocus={handleFocus}
         >
-          <MenuItem value={null}>Select Service</MenuItem>
+          <MenuItem value="">Select Service</MenuItem>
           {serviceOptions.map((option, index) => (
             <MenuItem key={index} value={option} sx={{ ...newPropsCss }}>
               {option}
@@ -55,3 +76,4 @@ const ServiceSelector = ({ service, handleServiceChange }) => {
 };
 
 export default ServiceSelector;
+

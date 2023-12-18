@@ -33,4 +33,7 @@ public interface AwsService {
 	public List<Aws> getBillingDetails(String serviceName, String startDate, String endDate, Integer months);
 
 	public List<Map<String, Object>> getTop10Services(List<Aws> billingDetails);
+	
+	
+	// public List<String> getDistinctService(String service);
 }

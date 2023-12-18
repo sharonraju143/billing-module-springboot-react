@@ -188,32 +188,59 @@ public class AwsServiceImpl implements AwsService {
 		return date.getMonth().toString();
 	}
 
+//	@Override
+//	public String[] getUniqueServicesAsArray() {
+//		List<String> uniqueServiceList = awsRepository.findDistinctByService();
+//		Set<String> uniqueServiceNames = new HashSet<>();
+//		List<String> formattedServiceNames = new ArrayList<>();
+//
+//		for (String jsonStr : uniqueServiceList) {
+//			try {
+//				ObjectMapper mapper = new ObjectMapper();
+//				JsonNode node = mapper.readTree(jsonStr);
+//				JsonNode serviceNode = node.get("Service");
+//				if (serviceNode != null) {
+//					String serviceName = serviceNode.textValue();
+//					if (uniqueServiceNames.add(serviceName)) {
+//						String formattedService = "{ \"service\": \"" + serviceName + "\" }";
+//						formattedServiceNames.add(formattedService);
+//					}
+//				}
+//			} catch (JsonProcessingException e) {
+//				e.printStackTrace();
+//			}
+//		}
+//
+//		return formattedServiceNames.toArray(new String[0]);
+//
+//	}
+	
+	
 	@Override
 	public String[] getUniqueServicesAsArray() {
-		List<String> uniqueServiceList = awsRepository.findDistinctByService();
-		Set<String> uniqueServiceNames = new HashSet<>();
-		List<String> formattedServiceNames = new ArrayList<>();
+	    List<String> uniqueServiceList = awsRepository.findDistinctByService();
+	    Set<String> uniqueServiceNames = new HashSet<>();
+	    List<String> formattedServiceNames = new ArrayList<>();
 
-		for (String jsonStr : uniqueServiceList) {
-			try {
-				ObjectMapper mapper = new ObjectMapper();
-				JsonNode node = mapper.readTree(jsonStr);
-				JsonNode serviceNode = node.get("Service");
-				if (serviceNode != null) {
-					String serviceName = serviceNode.textValue();
-					if (uniqueServiceNames.add(serviceName)) {
-						String formattedService = "{ \"service\": \"" + serviceName + "\" }";
-						formattedServiceNames.add(formattedService);
-					}
-				}
-			} catch (JsonProcessingException e) {
-				e.printStackTrace();
-			}
-		}
+	    for (String jsonStr : uniqueServiceList) {
+	        try {
+	            ObjectMapper mapper = new ObjectMapper();
+	            JsonNode node = mapper.readTree(jsonStr);
+	            JsonNode serviceNode = node.get("Service");
+	            if (serviceNode != null) {
+	                String serviceName = serviceNode.textValue();
+	                if (uniqueServiceNames.add(serviceName)) {
+	                    formattedServiceNames.add(serviceName);
+	                }
+	            }
+	        } catch (JsonProcessingException e) {
+	            e.printStackTrace();
+	        }
+	    }
 
-		return formattedServiceNames.toArray(new String[0]);
-
+	    return formattedServiceNames.toArray(new String[0]);
 	}
+
 
 	@Override
 	public List<Aws> getAllDataByDateRange(String startDate, String endDate) {
@@ -365,5 +392,13 @@ public class AwsServiceImpl implements AwsService {
 
 		return billingDetails;
 	}
+
+//	@Override
+//	public List<String> getDistinctService(String service) {
+//		
+//		return awsRepository.findDistinctByService(service);
+//	}
+
+	
 
 }

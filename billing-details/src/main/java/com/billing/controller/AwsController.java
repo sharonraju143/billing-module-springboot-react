@@ -164,5 +164,12 @@ public class AwsController {
             return ResponseEntity.badRequest().body(errorResponse);
         }
     }
+    
+    
+//    @GetMapping("/ServiceNames")
+//    public ResponseEntity<List<String>> getDistinctServiceNames(String service) {
+//        List<String> distinctServiceNames = awsService.getDistinctService(service);
+//        return ResponseEntity.ok(distinctServiceNames);
+//    }
 
 }

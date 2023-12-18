@@ -6,7 +6,7 @@ spring:
     name: BILLING-SERVICE
   data:
     mongodb:
-      host: localhost
+      host: 172.20.100.7
       port: 27017
       database: billing_reports
       
