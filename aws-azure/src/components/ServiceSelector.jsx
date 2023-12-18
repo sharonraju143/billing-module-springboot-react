@@ -32,20 +32,6 @@ const ServiceSelector = ({ service, handleServiceChange }) => {
     },
   };
 
-  // const forListGet = async () => {
-  //   try {
-  //     const res = await listService();
-  //     console.log(res);
-  //     setList(res)
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
-
-  // useEffect(()=>{
-  //   forListGet()
-  // },[])
-
   return (
     <React.Fragment>
       <FormControl sx={{ ...newPropsCss }} fullWidth>

@@ -114,11 +114,12 @@ export default function Sidenav() {
                   minWidth: 0,
                   mr: open ? 3 : "auto",
                   justifyContent: "center",
+                  color:"white"
                 }}
               >
                 <HomeIcon />
               </ListItemIcon>
-              <ListItem sx={{ opacity: open ? 1 : 0, fontSize: 14 }}>
+              <ListItem sx={{ opacity: open ? 1 : 0, fontSize: 14,  }}>
                 Home
               </ListItem>
             </ListItemButton>
@@ -203,6 +204,7 @@ export default function Sidenav() {
                   minWidth: 0,
                   mr: open ? 3 : "auto",
                   justifyContent: "center",
+                  color:"white"
                 }}
               >
                 <GitHubIcon />

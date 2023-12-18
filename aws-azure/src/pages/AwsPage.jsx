@@ -23,22 +23,22 @@ export const AwsPage = () => {
     endDate: "",
   });
   const [months, setMonths] = useState(0);
-  const [display,setDisplay]=useState(false)
-  const [isDateDisabled, setIsDateDisabled]= useState(false);
-  const [isMonthDisabled, setIsMonthDisabled]=useState(false);
+  const [display, setDisplay] = useState(false);
+  const [isDateDisabled, setIsDateDisabled] = useState(false);
+  const [isMonthDisabled, setIsMonthDisabled] = useState(false);
   const [data, setData] = useState([]);
-  
+  const [submitClicked, setSubmitClicked] = useState(false);
 
-  
-  const formattedTotalAmount = data?.totalAmount ? parseFloat(data.totalAmount).toFixed(2) : null;
-
+  const formattedTotalAmount = data?.totalAmount
+    ? parseFloat(data.totalAmount).toFixed(2)
+    : null;
 
   const handleStartDateChange = (event) => {
     setDateRange({
       ...dateRange,
       startDate: event.target.value,
     });
-    setIsMonthDisabled(event.target.value !=="" || dateRange.endDate !== "");
+    setIsMonthDisabled(event.target.value !== "" || dateRange.endDate !== "");
   };
 
   const handleEndDateChange = (event) => {
@@ -51,11 +51,22 @@ export const AwsPage = () => {
 
   const handleMonthChange = (event) => {
     setMonths(event.target.value);
-    console.log(display)
-    // info1(display)
-   setDisplay(true);
-   setIsDateDisabled(event.target.value !== "0");
-    
+    setDisplay(true);
+    setIsDateDisabled(event.target.value !== "0");
+  };
+
+  const handleReset = () => {
+    setService("");
+    setDateRange({
+      startDate: "",
+      endDate: "",
+    });
+    setMonths(0);
+    setIsDateDisabled(false);
+    setIsMonthDisabled(false);
+    setData([]);
+    setSubmitClicked(false);
+    setDisplay(false);
   };
 
   const handleServiceChange = (event) => {
@@ -64,15 +75,6 @@ export const AwsPage = () => {
 
   const toggleSidenav = () => {
     setSidenavOpen(!sidenavOpen);
-  };
-
-  const resetFilters = () => {
-    setService("");
-    setDateRange({
-      startDate: "",
-      endDate: "",
-    });
-    setMonths(0);
   };
 
   const forAwsGet = async () => {
@@ -110,9 +112,9 @@ export const AwsPage = () => {
   const DateDisabled = () => {
     return months !== 0;
   };
-useEffect(()=>{
-setDisplay(true)
-},[display])
+  useEffect(() => {
+    setDisplay(true);
+  }, [display]);
   useEffect(() => {
     // Load data from localStorage on component mount
     const savedService = localStorage.getItem("service");
@@ -121,7 +123,8 @@ setDisplay(true)
     const savedMonths = localStorage.getItem("months");
 
     if (savedService) setService(savedService);
-    if (savedStartDate) setDateRange({ ...dateRange, startDate: savedStartDate });
+    if (savedStartDate)
+      setDateRange({ ...dateRange, startDate: savedStartDate });
     if (savedEndDate) setDateRange({ ...dateRange, endDate: savedEndDate });
     if (savedMonths) setMonths(savedMonths);
   }, []);
@@ -135,9 +138,13 @@ setDisplay(true)
   };
 
   useEffect(() => {
-    forAwsGet();
-    updateLocalStorage();
-  }, [service, dateRange.endDate, dateRange.startDate, months]);
+    if (submitClicked) {
+      forAwsGet();
+      updateLocalStorage();
+      setSubmitClicked(false);
+    }
+  }, [submitClicked]);
+  // }, [service, dateRange.endDate, dateRange.startDate, months]);
 
   return (
     <div style={bodyStyle}>
@@ -149,7 +156,12 @@ setDisplay(true)
 
           <Box
             component="main"
-            sx={{ ...contentStyle, marginLeft: sidenavOpen ? 250 : 0, width: "100%", flexGrow:1, }}
+            sx={{
+              ...contentStyle,
+              marginLeft: sidenavOpen ? 250 : 0,
+              width: "100%",
+              flexGrow: 1,
+            }}
           >
             <Card sx={{ px: 2, py: 4, m: 2 }}>
               <Box
@@ -176,23 +188,30 @@ setDisplay(true)
                       handleEndDateChange={handleEndDateChange}
                       dateRange={dateRange}
                       DateDisabled={DateDisabled}
-                      disabled ={isDateDisabled}
+                      disabled={isDateDisabled} // Pass isDateDisabled as a prop here
                     />
                   </Grid>
 
-                  <Grid item xs={12} sm={6} md={6} lg={2 } xl={2}>
+                  <Grid item xs={12} sm={6} md={6} lg={2} xl={2}>
                     <h5>select Duration</h5>
                     <DurationSelector
                       handleMonthChange={handleMonthChange}
                       months={months}
                       MonthDisabled={MonthDisabled}
-                      disabled = {isMonthDisabled}
+                      disabled={isMonthDisabled}
                     />
                   </Grid>
 
                   <Grid item xs={6} md={0.8} sm={12}>
-                    <Button variant="outlined" onClick={resetFilters}>
+                    <Button variant="outlined" onClick={handleReset}>
                       Reset
+                    </Button>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={() => setSubmitClicked(true)}
+                    >
+                      Submit
                     </Button>
                   </Grid>
                 </Grid>
@@ -200,6 +219,8 @@ setDisplay(true)
             </Card>
 
             <Grid container spacing={3}>
+
+              {/* Barchart  */}
               <Grid sx={{ px: 2, py: 4, m: 2 }} item xs={11.2} md={6} lg={8}>
                 {(data?.monthlyTotalAmounts?.length > 0 && service) ||
                 (!service &&
@@ -208,37 +229,45 @@ setDisplay(true)
                 ) : (
                   <div className="chart-container">
                     <div className="headtag">
-                      <h4>Bar Chart</h4>
-                      <p>No data available</p>
+                      
+                      <BarChat />
+                      
                     </div>
                   </div>
                 )}
               </Grid>
 
-              {formattedTotalAmount && (
-                 <Grid sx={{ px: 2, py: 4, m: 2 }} item xs={11.2} md={6} lg={3}>
-                 <Paper
-                   sx={{
-                     p: 2,
-                     display: "flex",
-                     flexDirection: "column",
-                     height: 250,
-                     padding: 5,
-                     backgroundColor: "#d3d3f3",
-                   }}
-                 >
-                   <h5>Total Amount</h5>
-                   <Typography component="p" variant="h6">
-                     ${formattedTotalAmount}
-                   </Typography>
-                 </Paper>
-               </Grid>
-              )}
+                  {/* Totalamount */}
+              <Grid sx={{ px: 2, py: 4, m: 2 }} item xs={11.2} md={6} lg={3}>
+                <Paper
+                  sx={{
+                    p: 2,
+                    display: "flex",
+                    flexDirection: "column",
+                    height: 250,
+                    padding: 5,
+                    backgroundColor: "#d3d3f3",
+                  }}
+                >
+                  <h5>Total Amount</h5>
+                  {formattedTotalAmount !== null ? (
+                    <Typography component="p" variant="h6">
+                      ${formattedTotalAmount}
+                    </Typography>
+                  ) : (
+                    <Typography component="p" variant="body1">
+                      $0.00
+                    </Typography>
+                  )}
+                </Paper>
+              </Grid>
 
+                    {/* ServicesChart*/}
               <Grid sx={{ px: 2, py: 4, m: 2 }} item xs={11.2} md={6} lg={7}>
                 <ServicesChart dataset={data && data?.top10Services} />
               </Grid>
 
+                    {/* ServicesPieChart*/}
               <Grid sx={{ px: 2, py: 4, m: 2 }} item xs={11.2} md={6} lg={4}>
                 <ServicesPieChart dataset={data && data?.top10Services} />
               </Grid>

@@ -1,4 +1,4 @@
-import React from "react";
+ import React from "react";
 import { PieChart, Pie, Cell, Legend, Tooltip } from "recharts";
 
 const ServicesPieChart = ({ dataset }) => {
@@ -6,15 +6,16 @@ const ServicesPieChart = ({ dataset }) => {
     return (
       <div className="chart-container">
         <div className="headtag">
-          <h3>Top 5 cons</h3>
-          <div>No data available</div>        </div>
+          <h3>Top 5 consumers</h3>
+          <div>No data available</div>
+        </div>
       </div>
     );
   }
 
   const transformedData = dataset?.map((item, index) => ({
     name: item.serviceName,
-    value: item.amount,
+    value: parseFloat(item.amount.toFixed(2)), // Round to 2 decimal places
     id: index + 1,
   }));
 
@@ -23,7 +24,7 @@ const ServicesPieChart = ({ dataset }) => {
   return (
     <div className="chart-pie">
       <div className="headtag">
-        <h3>Top 5 Customers</h3>
+        <h3>Top 5 Consumers</h3>
       </div>
       <PieChart width={400} height={400}>
         <Pie
@@ -36,7 +37,10 @@ const ServicesPieChart = ({ dataset }) => {
           label
         >
           {transformedData.map((entry, index) => (
-            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+            <Cell
+              key={`cell-${index}`}
+              fill={COLORS[index % COLORS.length]}
+            />
           ))}
         </Pie>
         <Tooltip />

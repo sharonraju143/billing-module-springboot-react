@@ -146,13 +146,6 @@ public class AwsServiceImpl implements AwsService {
 						monthData.put("amount", entry.getValue());
 						aggregatedMonthlyTotalAmounts.add(monthData);
 					});
-
-//	        for (Map.Entry<String, Double> entry : monthlyAmounts.entrySet()) {
-//	            Map<String, Object> monthData = new HashMap<>();
-//	            monthData.put("month", entry.getKey());
-//	            monthData.put("amount", entry.getValue());
-//	            aggregatedMonthlyTotalAmounts.add(monthData);
-//	        }
 			return aggregatedMonthlyTotalAmounts;
 
 		} else {
@@ -269,12 +262,42 @@ public class AwsServiceImpl implements AwsService {
 
 		return top10Services;
 	}
+	
+//	@Override
+//	public List<Aws> getBillingDetails(String serviceName, String startDate, String endDate, Integer months) {
+//	    List<Aws> billingDetails;
+//
+//	    if ((startDate != null && endDate != null) || (months != null && months > 0)) {
+//	        if (serviceName != null && !serviceName.isEmpty()) {
+//	            // If a specific service is selected
+//	            if (startDate != null && endDate != null) {
+//	                billingDetails = getDataByServiceAndDateRange(serviceName, startDate, endDate);
+//	            } else {
+//	                billingDetails = getBillingDetailsForDuration(serviceName, months);
+//	            }
+//	        } else {
+//	            // If no specific service is selected
+//	            if (startDate != null && endDate != null) {
+//	                billingDetails = getAllDataByDateRange(startDate, endDate);
+//	            } else if (months != null && months > 0) {
+//	                billingDetails = getBillingDetailsForDuration(months);
+//	            } else {
+//	                throw new IllegalArgumentException("Please enter a valid duration in months");
+//	            }
+//	        }
+//	    } else {
+//	        throw new IllegalArgumentException("Please provide service and dates or a valid duration to get the data");
+//	    }
+//
+//	    return billingDetails;
+//	}
+
 
 	@Override
 	public List<Aws> getBillingDetails(String serviceName, String startDate, String endDate, Integer months) {
 		List<Aws> billingDetails;
 
-		if ((startDate != null && endDate != null) || months != null) {
+		if ((startDate != null && endDate != null) || (months != null && months > 0)) {
 			if (serviceName != null && !serviceName.isEmpty()) {
 				// If a specific service is selected
 				if (startDate != null && endDate != null) {
@@ -286,15 +309,42 @@ public class AwsServiceImpl implements AwsService {
 				// If no specific service is selected
 				if (startDate != null && endDate != null) {
 					billingDetails = getAllDataByDateRange(startDate, endDate);
-				} else if (months != null) {
+				} else if (months != null && months > 0) {
 					billingDetails = getBillingDetailsForDuration(months);
 				} else {
-					billingDetails = getAllServices(); // Get all AWS billing details
+					//billingDetails = getAllServices(); // Get all AWS billing details
+					throw new IllegalArgumentException("Please enter a valid duration in months");
 				}
 			}
 		} else {
-			return Collections.emptyList(); // Return empty list when no parameters are provided
+			//return Collections.emptyList(); // Return empty list when no parameters are provided
+			throw new IllegalArgumentException("Please provide service and dates or dates or duration to get the data");
 		}
+
+	
+//	public List<Aws> getBillingDetails(String serviceName, String startDate, String endDate, Integer months) {
+//		List<Aws> billingDetails;
+//		
+//	    if ((startDate != null && endDate != null) || months != null) {
+//	        if (serviceName != null && !serviceName.isEmpty()) {
+//	            if (startDate != null && endDate != null) {
+//	                return getDataByServiceAndDateRange(serviceName, startDate, endDate);
+//	            } else {
+//	                return getBillingDetailsForDuration(serviceName, months);
+//	            }
+//	        } else {
+//	            if (startDate != null && endDate != null) {
+//	                return getAllDataByDateRange(startDate, endDate);
+//	            } else if (months != null) {
+//	                return getBillingDetailsForDuration(months);
+//	            } else {
+//	                return getAllServices(); // Get all AWS billing details
+//	            }
+//	        }
+//	    } else {
+//	        throw new IllegalArgumentException("Please provide service and dates or dates or duration to get the data");
+//	    }
+//	}
 
 		// Fetch top 10 services based on their amounts
 		List<Map<String, Object>> top10Services = new ArrayList<>();

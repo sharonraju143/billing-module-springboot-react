@@ -11,8 +11,8 @@ import BarsDataset from "../components/HomeBarChart";
 
 
 export const Home = () => {
-  const [awsCount, setAwsCount] = useState("");
-  const [azureCount,setAzureCount] = useState("");
+  // const [awsCount, setAwsCount] = useState("");
+  // const [azureCount,setAzureCount] = useState("");
 
 
   const bodyStyle = {
@@ -22,21 +22,21 @@ export const Home = () => {
     overflowX: "hidden",
   };
 
-  const getAwsCount = async () => {
-    const data = await awsCountService();
-    setAwsCount(data);
-  };
+  // const getAwsCount = async () => {
+  //   const data = await awsCountService();
+  //   setAwsCount(data);
+  // };
 
 
-  const getAzureCount = async () => {
-    const data = await azureCountService();
-    setAzureCount(data);
-  };
+  // const getAzureCount = async () => {
+  //   const data = await azureCountService();
+  //   setAzureCount(data);
+  // };
 
-  useEffect(() => {
-    getAwsCount();
-    getAzureCount();
-  });
+  // useEffect(() => {
+  //   getAwsCount();
+  //   getAzureCount();
+  // });
 
   return (
     <div style={bodyStyle}>
@@ -49,10 +49,11 @@ export const Home = () => {
 
           
        
-
-            <div className="chart-home">
+        <Grid sx={{ px: 2, py: 4, m: 2 }} item xs={11.2} md={6} lg={6}>
+            {/* <div className="chart-home"> */}
                 <BarsDataset/>
-                </div>
+                
+                </Grid>
             
           {/* <Grid container spacing={3}>
             <Grid item xs={4}>

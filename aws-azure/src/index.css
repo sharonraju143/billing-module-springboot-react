@@ -1,5 +1,8 @@
 .chart-container {
 	/* width: 629px;  */
+
+	  /* width: 100%;
+		overflow: hidden; */
 	height: 280px; 
 	flex-shrink: 0;
 	border-radius: 7px;
@@ -8,6 +11,14 @@
 	backdrop-filter: blur(70px);
 }
 
+.responsive-chart {
+	width: 100%;
+  }
+ 
+.chart-cont{
+	width:100%;
+	overflow: hidden;
+}  
 
 .chart-pie {
 	/* width: 629px;  */
@@ -18,6 +29,21 @@
 	background: rgb(217, 215, 234);
 	backdrop-filter: blur(70px);
 }
+
+@media screen and (max-width: 768px) {
+	.chart-cont {
+	  /* Adjust the width for smaller screens */
+	  width: 80%;
+	}
+  }
+  
+  @media screen and (max-width: 480px) {
+	.chart-cont {
+	  /* Further adjust the width for even smaller screens */
+	  width: 90%;
+	}
+  }
+
 
 @media screen and (max-width: 768px) {
 	.chart-container {
@@ -82,4 +108,8 @@ color: rgb(69, 4, 129);
   width: 100%;
   max-width: 1200px; /* Adjust the maximum width as desired */
   margin: 0 auto;
+}
+
+.css-i4bv87-MuiSvgIcon-root{
+	color:unset;
 }

@@ -23,10 +23,7 @@ public interface AwsRepository extends MongoRepository<Aws, String> {
 	@Query(value = "{'service' : {$exists : true}}", fields = "{'service' : 1, '_id':0}")
 	List<String> findDistinctByService();
 
-//	 @Query("{$match: { $or: [{ $and: [{ startDate: { $gte: ?0 } }, { endDate: { $lte: ?1 } }] }, { months: ?2 }] } },"
-//	            + "{$group: { _id: '$service', totalAmount: { $sum: '$amount' } } },"
-//	            + "{$sort: { totalAmount: -1 } }, {$limit: 10}")
-	    List<Map<String, Object>> findTop10ServicesByAmount(String startDate, String endDate, Integer months);
+	List<Map<String, Object>> findTop10ServicesByAmount(String startDate, String endDate, Integer months);
 
 	List<Aws> findByServiceAndStartDateGreaterThanEqual(String service, String startDate);
 

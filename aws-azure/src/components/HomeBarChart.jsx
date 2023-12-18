@@ -8,7 +8,7 @@ const chartSetting = {
       label: 'rainfall (mm)',
     },
   ],
-  width: 1200,
+  width: '100%',
   height: 300,
   sx: {
     [`.${axisClasses.left} .${axisClasses.label}`]: {
@@ -119,7 +119,64 @@ const dataset = [
 
 const valueFormatter = (value) => `${value}mm`;
 
+
+
 export default function BarsDataset() {
+
+  const [windowWidth, setWindowWidth] = React.useState(window.innerWidth);
+
+
+  React.useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
+  // Update width dynamically based on screen size
+  React.useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
+  // Set the chart width based on screen size
+  React.useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
+  // Update chart width based on screen size
+  React.useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
   return (
     <BarChart
       dataset={dataset}
@@ -133,6 +190,7 @@ export default function BarsDataset() {
         // ... (rest of your series configurations remain unchanged)
       ]}
       {...chartSetting}
+      width={windowWidth > 768 ? 1200 : '100%'} // Adjust width based on screen size
     />
   );
 }

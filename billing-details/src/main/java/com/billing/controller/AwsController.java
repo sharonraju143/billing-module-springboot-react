@@ -68,13 +68,23 @@ public class AwsController {
 		}
 	}
 
+	@GetMapping("/distinct-services")
+	public ResponseEntity<String[]> getDistinctServices() {
+		String[] distinctServices = awsService.getUniqueServicesAsArray();
+		if (distinctServices.length == 0) {
+			return ResponseEntity.noContent().build();
+		} else {
+			return ResponseEntity.ok(distinctServices);
+		}
+	}
+
 //	@GetMapping("/billing-details")
 //	public ResponseEntity<Map<String, Object>> getBillingDetails(
 //			@RequestParam(value = "service", required = false) String service,
 //			@RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate,
 //			@RequestParam(required = false) Integer months) {
 //
-//		if (service == null && startDate == null && endDate == null && months == null) {
+//		if (service == null && startDate == null && endDate == null && (months == null || months <= 0)) {
 //			Map<String, Object> emptyResponse = new LinkedHashMap<>();
 //			emptyResponse.put("billingDetails", Collections.emptyList());
 //			emptyResponse.put("monthlyTotalAmounts", Collections.emptyList());
@@ -93,94 +103,66 @@ public class AwsController {
 //		response.put("monthlyTotalAmounts", monthlyTotalAmounts);
 //		response.put("totalAmount", totalAmount);
 //
+//		// Fetch top 10 services if no specific service is selected
+//		if (service == null || service.isEmpty()) {
+//			List<Map<String, Object>> top10Services = awsService.getTop10Services(billingDetails);
+//			response.put("top10Services", top10Services);
+//		}
+//
 //		if (billingDetails.isEmpty()) {
-//			return ResponseEntity.noContent().build();
+//			//return ResponseEntity.noContent().build();
+//			  Map<String, Object> emptyBillingDetailsResponse = new LinkedHashMap<>();
+//	            emptyBillingDetailsResponse.put("message", "No billing details available.");
+//	            return ResponseEntity.ok(emptyBillingDetailsResponse);
+//	        
 //		} else {
 //			return ResponseEntity.ok(response);
 //		}
 //	}
-
-	@GetMapping("/distinct-services")
-	public ResponseEntity<String[]> getDistinctServices() {
-		String[] distinctServices = awsService.getUniqueServicesAsArray();
-		if (distinctServices.length == 0) {
-			return ResponseEntity.noContent().build();
-		} else {
-			return ResponseEntity.ok(distinctServices);
-		}
-	}
 	
-	
-//	@GetMapping("/billing-details")
-//	public ResponseEntity<Map<String, Object>> getBillingDetails(
-//	        @RequestParam(value = "service", required = false) String service,
-//	        @RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate,
-//	        @RequestParam(required = false) Integer months) {
-//
-//	    List<Aws> billingDetails = Collections.emptyList();
-//	    List<Map<String, Object>> monthlyTotalAmounts = Collections.emptyList();
-//	    Double totalAmount = 0.0;
-//	    List<Map<String, Object>> top10ServicesByAmount = Collections.emptyList();
-//
-//	    if (startDate != null || endDate != null || months != null) {
-//	        billingDetails = awsService.getBillingDetails(service, startDate, endDate, months);
-//	        monthlyTotalAmounts = awsService.getMonthlyTotalAmounts(service, startDate, endDate, months);
-//	        totalAmount = awsService.getTotalAmount(service, startDate, endDate, months);
-//	        top10ServicesByAmount = awsService.getTop10Services(startDate, endDate, months);
-//	    }
-//
-//	    Map<String, Object> response = new LinkedHashMap<>();
-//	    response.put("billingDetails", billingDetails);
-//	    response.put("monthlyTotalAmounts", monthlyTotalAmounts);
-//	    response.put("totalAmount", totalAmount);
-//	    response.put("top10ServicesByAmount", top10ServicesByAmount);
-//
-//	    if (billingDetails.isEmpty()) {
-//	        return ResponseEntity.noContent().build();
-//	    } else {
-//	        return ResponseEntity.ok(response);
-//	    }
-//	}
-	
-	
-	@GetMapping("/billing-details")
-	public ResponseEntity<Map<String, Object>> getBillingDetails(
-	        @RequestParam(value = "service", required = false) String service,
-	        @RequestParam(required = false) String startDate,
-	        @RequestParam(required = false) String endDate,
-	        @RequestParam(required = false) Integer months) {
 
-	    if (service == null && startDate == null && endDate == null && months == null) {
-	        Map<String, Object> emptyResponse = new LinkedHashMap<>();
-	        emptyResponse.put("billingDetails", Collections.emptyList());
-	        emptyResponse.put("monthlyTotalAmounts", Collections.emptyList());
-	        emptyResponse.put("totalAmount", 0.0);
-	        return ResponseEntity.ok(emptyResponse);
-	    }
+    @GetMapping("/billing-details")
+    public ResponseEntity<Map<String, Object>> getBillingDetails(
+            @RequestParam(value = "service", required = false) String service,
+            @RequestParam(required = false) String startDate,
+            @RequestParam(required = false) String endDate,
+            @RequestParam(required = false) Integer months) {
 
-	    List<Aws> billingDetails = awsService.getBillingDetails(service, startDate, endDate, months);
-	    List<Map<String, Object>> monthlyTotalAmounts = awsService.getMonthlyTotalAmounts(service, startDate, endDate, months);
-	    Double totalAmount = awsService.getTotalAmount(service, startDate, endDate, months);
+        if (service == null && startDate == null && endDate == null && (months == null || months <= 0)) {
+        	Map<String, Object> emptyBillingDetailsResponse = new LinkedHashMap<>();
+            emptyBillingDetailsResponse.put("message", "Enter valid input.");
+        }
 
-	    // Create a response map
-	    Map<String, Object> response = new LinkedHashMap<>();
-	    response.put("billingDetails", billingDetails);
-	    response.put("monthlyTotalAmounts", monthlyTotalAmounts);
-	    response.put("totalAmount", totalAmount);
+        try {
+            List<Aws> billingDetails = awsService.getBillingDetails(service, startDate, endDate, months);
+            List<Map<String, Object>> monthlyTotalAmounts = awsService.getMonthlyTotalAmounts(service, startDate, endDate, months);
+            Double totalAmount = awsService.getTotalAmount(service, startDate, endDate, months);
 
-	    // Fetch top 10 services if no specific service is selected
-	    if (service == null || service.isEmpty()) {
-	        List<Map<String, Object>> top10Services = awsService.getTop10Services(billingDetails);
-	        response.put("top10Services", top10Services);
-	    }
+            // Create a response map
+            Map<String, Object> response = new LinkedHashMap<>();
+            response.put("billingDetails", billingDetails);
+            response.put("monthlyTotalAmounts", monthlyTotalAmounts);
+            response.put("totalAmount", totalAmount);
 
-	    if (billingDetails.isEmpty()) {
-	        return ResponseEntity.noContent().build();
-	    } else {
-	        return ResponseEntity.ok(response);
-	    }
-	}
+            // Fetch top 10 services if no specific service is selected
+            if (service == null || service.isEmpty()) {
+                List<Map<String, Object>> top10Services = awsService.getTop10Services(billingDetails);
+                response.put("top10Services", top10Services);
+            }
 
-
+            if (billingDetails.isEmpty()) {
+                Map<String, Object> emptyBillingDetailsResponse = new LinkedHashMap<>();
+                emptyBillingDetailsResponse.put("message", "No billing details available.");
+                return ResponseEntity.ok(emptyBillingDetailsResponse);
+            } else {
+                return ResponseEntity.ok(response);
+            }
+        } catch (IllegalArgumentException e) {
+            // Handle the exception, return an error response or log the error message
+            Map<String, Object> errorResponse = new LinkedHashMap<>();
+            errorResponse.put("error", e.getMessage());
+            return ResponseEntity.badRequest().body(errorResponse);
+        }
+    }
 
 }
