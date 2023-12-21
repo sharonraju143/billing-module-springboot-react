@@ -64,15 +64,16 @@ const GcpSelector = ({ serviceDescription, handleServiceChange }) => {
     <FormControl sx={{ ...newPropsCss }} fullWidth>
       <Select
         fullWidth
-      
         sx={{ ...newPropsCss, height: "2.4em" }}
-        labelId="service-label"
-        value={serviceDescription}
+        labelId="serviceDescription-label"
+        value={serviceDescription || ""}
         onChange={handleServiceChange}
         onFocus={handleFocus}
       >
       
-        <MenuItem  disabled sx={{ ...newPropsCss }}>Select Service</MenuItem>
+        <MenuItem  disabled selected >
+          Select Service
+          </MenuItem>
         {serviceOptions.map((option, index) => (
           <MenuItem key={index} value={option} sx={{ ...newPropsCss }}>
             {option}

@@ -66,37 +66,82 @@ public class GcpController {
 	}
 	
 	
+//	@GetMapping("/details")
+//    public ResponseEntity<Map<String, Object>> getBillingDetails(
+//            @RequestParam(required = false) String serviceDescription,
+//            @RequestParam(required = false) String startDate,
+//            @RequestParam(required = false) String endDate,
+//            @RequestParam(required = false) Integer months
+//    ) {
+//        List<Gcp> billingDetails = gcpService.getBillingDetails(serviceDescription, startDate, endDate, months);
+//
+//        if (billingDetails.isEmpty()) {
+//            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(new LinkedHashMap<>());
+//        }
+//
+//        double totalCost = billingDetails.stream().mapToDouble(Gcp::getCost).sum();
+//
+//        // Calculate top 5 service descriptions
+//        List<Map<String, Object>> top5Services = gcpService.getTop5ServiceDescriptions(billingDetails);
+//
+//        // Calculate monthly total bills
+//        Map<String, Double> monthlyTotalBills = gcpService.calculateMonthlyTotalBills(billingDetails);
+//
+//        // Prepare the response map
+//        Map<String, Object> response = new LinkedHashMap<>();
+//        response.put("billingDetails", billingDetails);
+//        response.put("totalCost", totalCost);
+//        response.put("monthlyTotalBills", monthlyTotalBills);
+//        if (!top5Services.isEmpty()) {
+//            response.put("top5ServiceDescriptions", top5Services);
+//        }
+//
+//        return ResponseEntity.ok(response);
+//    }
+
+	
+	
+	
 	@GetMapping("/details")
-    public ResponseEntity<Map<String, Object>> getBillingDetails(
-            @RequestParam(required = false) String serviceDescription,
-            @RequestParam(required = false) String startDate,
-            @RequestParam(required = false) String endDate,
-            @RequestParam(required = false) Integer months
-    ) {
-        List<Gcp> billingDetails = gcpService.getBillingDetails(serviceDescription, startDate, endDate, months);
+	public ResponseEntity<?> getBillingDetails(
+	        @RequestParam(required = false) String serviceDescription,
+	        @RequestParam(required = false) String startDate,
+	        @RequestParam(required = false) String endDate,
+	        @RequestParam(required = false) Integer months
+	) {
+	    if (serviceDescription == null && startDate == null && endDate == null && months == null) {
+	        // If any required parameter is missing, return a response indicating the required fields
+	        Map<String, String> errorResponse = new LinkedHashMap<>();
+	        errorResponse.put("error", "Please select  required fields (serviceDescription, startDate, endDate, months)");
+	        return ResponseEntity.badRequest().body(errorResponse);
+	    }
 
-        if (billingDetails.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(new LinkedHashMap<>());
-        }
+	    List<Gcp> billingDetails = gcpService.getBillingDetails(serviceDescription, startDate, endDate, months);
 
-        double totalCost = billingDetails.stream().mapToDouble(Gcp::getCost).sum();
+	    // Rest of your existing logic here...
+	    // Calculate totalCost, top5Services, monthlyTotalBills, and prepare the response map
 
-        // Calculate top 5 service descriptions
-        List<Map<String, Object>> top5Services = gcpService.getTop5ServiceDescriptions(billingDetails);
+	    if (billingDetails.isEmpty()) {
+          return ResponseEntity.status(HttpStatus.NO_CONTENT).body(new LinkedHashMap<>());
+      }
 
-        // Calculate monthly total bills
-        Map<String, Double> monthlyTotalBills = gcpService.calculateMonthlyTotalBills(billingDetails);
+      double totalCost = billingDetails.stream().mapToDouble(Gcp::getCost).sum();
 
-        // Prepare the response map
-        Map<String, Object> response = new LinkedHashMap<>();
-        response.put("billingDetails", billingDetails);
-        response.put("totalCost", totalCost);
-        response.put("monthlyTotalBills", monthlyTotalBills);
-        if (!top5Services.isEmpty()) {
-            response.put("top5ServiceDescriptions", top5Services);
-        }
+      // Calculate top 5 service descriptions
+      List<Map<String, Object>> top5Services = gcpService.getTop5ServiceDescriptions(billingDetails);
 
-        return ResponseEntity.ok(response);
-    }
+      // Calculate monthly total bills
+      Map<String, Double> monthlyTotalBills = gcpService.calculateMonthlyTotalBills(billingDetails);
+	    // Create the response map
+	    Map<String, Object> response = new LinkedHashMap<>();
+	    response.put("billingDetails", billingDetails);
+	    response.put("totalCost", totalCost);
+	    response.put("monthlyTotalBills", monthlyTotalBills);
+	    if (!top5Services.isEmpty()) {
+	        response.put("top5ServiceDescriptions", top5Services);
+	    }
+
+	    return ResponseEntity.ok(response);
+	}
 
 }

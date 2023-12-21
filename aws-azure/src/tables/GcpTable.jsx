@@ -14,7 +14,7 @@ export default function GcpTable({ data, months, serviceDescription, fromDate, t
   ) {
     rows = data.map((detail) => ({
       id: detail.id,
-      date: detail.Date,
+      date: detail.date,
       serviceId: detail.serviceId,
       serviceDescription:detail.serviceDescription,
       cost: detail.cost,
@@ -26,26 +26,30 @@ export default function GcpTable({ data, months, serviceDescription, fromDate, t
     {
       field: "id",
       headerName: "Id",
-      width: 250,
+      width: 300,
     },
     {
       field: "date",
       headerName: "Date",
-      width: 150,
+      width: 200,
+      valueGetter: (params) => {
+        const date = new Date(params.row.date);
+        return date.toISOString().split('T')[0];
+      },
     },
     {
       field: "serviceId",
       headerName: "Service ID",
-      width: 200,
+      width: 250,
     },
     {
       field: "serviceDescription",
-      headerName: "ServiceName",
+      headerName: "service Description",
       width: 400,
     },
     {
       field: "cost",
-      headerName: "Amount",
+      headerName: "Cost",
       width: 110,
     }
   ];
