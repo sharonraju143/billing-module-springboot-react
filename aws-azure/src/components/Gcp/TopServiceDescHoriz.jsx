@@ -1,21 +1,21 @@
 import React from "react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from "recharts";
 
-const ServicesChart = ({ dataset }) => {
-  if (!dataset || dataset.length === 0) {
+const TopResourseTypeBarChart = ({ top5ServiceDescriptions }) => {
+  if (!top5ServiceDescriptions || top5ServiceDescriptions.length === 0) {
     return (
-      <div className="chart-pie">
+      <div className="chart-container">
         <div className="headtag">
-          <h3>Top 5 Consumers </h3>
+          <h3>Top 5 Consumers</h3>
           <div>No data available</div>
         </div>
       </div>
     );
   }
 
-  const transformedData = dataset?.map((item) => ({
-    serviceName: item.serviceName,
-    amount: item.amount,
+  const transformedData = top5ServiceDescriptions?.map((item) => ({
+    serviceDescription: item.serviceDescription,
+    totalCost: parseFloat(item.totalCost.toFixed(2)), // Round to 2 decimal places
   }));
 
   return (
@@ -28,10 +28,10 @@ const ServicesChart = ({ dataset }) => {
           <BarChart width={700} height={400} data={transformedData} layout="vertical">
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis type="number" />
-            <YAxis dataKey="serviceName" type="category" width={150} />
+            <YAxis dataKey="serviceDescription" type="category" width={150} />
             <Tooltip />
             <Legend />
-            <Bar dataKey="amount" fill="#02B2AF" />
+            <Bar dataKey="totalCost" fill="#02B2AF" />
           </BarChart>
         </div>
       </div>
@@ -39,4 +39,4 @@ const ServicesChart = ({ dataset }) => {
   );
 };
 
-export default ServicesChart;
+export default TopResourseTypeBarChart;

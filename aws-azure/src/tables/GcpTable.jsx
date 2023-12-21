@@ -2,22 +2,23 @@ import * as React from "react";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { Box } from "@mui/material";
 
-export default function AwsTable({ data, months, service, fromDate, toDate }) {
+export default function GcpTable({ data, months, serviceDescription, fromDate, toDate }) {
   let rows = [];
 
   if (
     Array.isArray(data) &&
     months !== 0 &&
-    service !== 0 &&
+    serviceDescription !== 0 &&
     fromDate !== 0 &&
     toDate !== 0
   ) {
     rows = data.map((detail) => ({
       id: detail.id,
-      startDate: detail.startDate,
-      endDate: detail.endDate,
-      service: detail.service,
-      amount: detail.amount,
+      date: detail.Date,
+      serviceId: detail.serviceId,
+      serviceDescription:detail.serviceDescription,
+      cost: detail.cost,
+      
     }));
   }
 
@@ -28,25 +29,25 @@ export default function AwsTable({ data, months, service, fromDate, toDate }) {
       width: 250,
     },
     {
-      field: "startDate",
-      headerName: "Date From",
+      field: "date",
+      headerName: "Date",
       width: 150,
     },
     {
-      field: "endDate",
-      headerName: "Date To",
+      field: "serviceId",
+      headerName: "Service ID",
       width: 200,
     },
     {
-      field: "service",
+      field: "serviceDescription",
       headerName: "ServiceName",
       width: 400,
     },
     {
-      field: "amount",
+      field: "cost",
       headerName: "Amount",
       width: 110,
-    },
+    }
   ];
 
   return (

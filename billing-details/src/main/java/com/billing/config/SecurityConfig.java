@@ -42,7 +42,7 @@ public class SecurityConfig {
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		return http.cors().and().csrf().disable().authorizeHttpRequests()
 				.requestMatchers("/api/users/authenticate", "/api/users/saveuser", "/api/users/login").permitAll().and()
-				.authorizeHttpRequests().requestMatchers("/api/users/**", "/api/aws/**", "/api/azure/**")
+				.authorizeHttpRequests().requestMatchers("/api/users/**", "/api/aws/**", "/api/azure/**","/api/gcp/**")
 				.authenticated().and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
 				.authenticationProvider(authenticationProvider())
 				.addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class).build();

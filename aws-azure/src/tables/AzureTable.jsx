@@ -1,48 +1,94 @@
-import React from "react";
+import * as React from "react";
+import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { Box } from "@mui/material";
-import { DataGrid } from "@mui/x-data-grid";
 
-const columns = [
-  { field: "id", headerName: "Id", width: 90 },
-  { field: "usageDate", headerName: "Date", width: 150 },
-  { field: "resourceType", headerName: "ResourceType", width: 150 },
-  { field: "resourceLocation", headerName: "ResourceLocation", width: 200 },
-  { field: "resourceGroupName", headerName: "ResourceGroupName", width: 200 },
-  { field: "serviceName", headerName: "ServiceName", width: 150 },
-  { field: "meter", headerName: "Meter", width: 150 },
-  { field: "tags", headerName: "Tags", width: 150 },
-  { field: "costUSD", headerName: "CostUSD", width: 150 },
-  { field: "cost", headerName: "Cost", width: 150 },
-  { field: "currency", headerName: "Currency", width: 150 },
-];
+export default function AzureTable({  data, months, ResourceType, fromDate, toDate }) {
+  let rows = [];
 
-const AzureTable = ({ details, duration }) => {
-  const rows = details.map((detail) => ({
-    id: detail.id,
-    usageDate: detail.usageDate,
-    resourceType: detail.resourceType,
-    resourceLocation: detail.resourceLocation,
-    resourceGroupName: detail.resourceGroupName,
-    serviceName: detail.serviceName,
-    meter: detail.meter,
-    tags: detail.tags,
-    costUSD: detail.costUSD,
-    cost: detail.cost,
-    currency: detail.currency,
-  }));
+  if (
+    Array.isArray(data) &&
+    months !== 0 &&
+    ResourceType !== 0 &&
+    fromDate !== 0 &&
+    toDate !== 0
+  ) {
+    rows = data.map((detail) => ({
+     
+      id: detail.id,
+      UsageDate: detail.usageDate,
+      ResourceType: detail.resourceType,
+      CostUSD: detail.costUSD,
+      Cost: detail.cost,
+      Currency: detail.currency,
+      
+    }))
+  };
+  const columns = [
+    
+    {
+      field: "id",
+      headerName: "Id",
+      width: 300,
+    },
+    {
+      field: "UsageDate",
+      headerName: "Date",
+      width: 170,
+      valueGetter: (params) => {
+        const usageDate = new Date(params.row.UsageDate);
+        return usageDate.toISOString().split('T')[0];
+      },
+    },
+    {
+      field: "ResourceType",
+      headerName: "Resource Type",
+      width: 320,
+    },
+    {
+      field: "CostUSD",
+      headerName: "Cost in USD",
+      width: 160,
+      valueGetter: (params) => {
+        const costUSD = Number(params.row.CostUSD);
+        return costUSD.toFixed(4); // This will format the cost to four decimal places
+      },
+    },
+    {
+      field: "Cost",
+      headerName: "Cost",
+      width: 160,
+      valueGetter: (params) => {
+        const cost = Number(params.row.Cost);
+        return cost.toFixed(4); // This will format the cost to four decimal places
+      },
+    },
+    {
+      field: "Currency",
+      headerName: "Currency",
+      width: 130,
+    },
+  ];
 
   return (
-    <Box sx={{ height: "100%", width: "100%" }}>
-      <DataGrid
-        sx={{ border: "1px solid black", marginTop: 4 }}
-        rows={duration !== 0 ? rows : []}
-        columns={columns}
-        pageSize={5}
-        //checkboxSelection
-        disableSelectionOnClick
-      />
+    <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
+      <div style={{ marginBottom: "20px" }}></div>
+      <div style={{ flex: 1, height: "100%", width: "100% !important" }}>
+        {rows.length > 0 ? (
+          <DataGrid
+            rows={rows}
+            columns={columns}
+            pageSize={10}
+            pagination
+            disableSelectionOnClick
+            slots={{ toolbar: GridToolbar }}
+            experimentalFeatures={{ ariaV7: true }}
+          />
+        ) : (
+          <div style={{ textAlign: "center", padding: "20px" }}>
+            No data available
+          </div>
+        )}
+      </div>
     </Box>
   );
-};
-
-export default AzureTable;
+}

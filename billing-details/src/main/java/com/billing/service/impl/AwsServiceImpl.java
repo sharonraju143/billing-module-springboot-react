@@ -188,59 +188,30 @@ public class AwsServiceImpl implements AwsService {
 		return date.getMonth().toString();
 	}
 
-//	@Override
-//	public String[] getUniqueServicesAsArray() {
-//		List<String> uniqueServiceList = awsRepository.findDistinctByService();
-//		Set<String> uniqueServiceNames = new HashSet<>();
-//		List<String> formattedServiceNames = new ArrayList<>();
-//
-//		for (String jsonStr : uniqueServiceList) {
-//			try {
-//				ObjectMapper mapper = new ObjectMapper();
-//				JsonNode node = mapper.readTree(jsonStr);
-//				JsonNode serviceNode = node.get("Service");
-//				if (serviceNode != null) {
-//					String serviceName = serviceNode.textValue();
-//					if (uniqueServiceNames.add(serviceName)) {
-//						String formattedService = "{ \"service\": \"" + serviceName + "\" }";
-//						formattedServiceNames.add(formattedService);
-//					}
-//				}
-//			} catch (JsonProcessingException e) {
-//				e.printStackTrace();
-//			}
-//		}
-//
-//		return formattedServiceNames.toArray(new String[0]);
-//
-//	}
-	
-	
 	@Override
 	public String[] getUniqueServicesAsArray() {
-	    List<String> uniqueServiceList = awsRepository.findDistinctByService();
-	    Set<String> uniqueServiceNames = new HashSet<>();
-	    List<String> formattedServiceNames = new ArrayList<>();
+		List<String> uniqueServiceList = awsRepository.findDistinctByService();
+		Set<String> uniqueServiceNames = new HashSet<>();
+		List<String> formattedServiceNames = new ArrayList<>();
 
-	    for (String jsonStr : uniqueServiceList) {
-	        try {
-	            ObjectMapper mapper = new ObjectMapper();
-	            JsonNode node = mapper.readTree(jsonStr);
-	            JsonNode serviceNode = node.get("Service");
-	            if (serviceNode != null) {
-	                String serviceName = serviceNode.textValue();
-	                if (uniqueServiceNames.add(serviceName)) {
-	                    formattedServiceNames.add(serviceName);
-	                }
-	            }
-	        } catch (JsonProcessingException e) {
-	            e.printStackTrace();
-	        }
-	    }
+		for (String jsonStr : uniqueServiceList) {
+			try {
+				ObjectMapper mapper = new ObjectMapper();
+				JsonNode node = mapper.readTree(jsonStr);
+				JsonNode serviceNode = node.get("Service");
+				if (serviceNode != null) {
+					String serviceName = serviceNode.textValue();
+					if (uniqueServiceNames.add(serviceName)) {
+						formattedServiceNames.add(serviceName);
+					}
+				}
+			} catch (JsonProcessingException e) {
+				e.printStackTrace();
+			}
+		}
 
-	    return formattedServiceNames.toArray(new String[0]);
+		return formattedServiceNames.toArray(new String[0]);
 	}
-
 
 	@Override
 	public List<Aws> getAllDataByDateRange(String startDate, String endDate) {
@@ -289,36 +260,6 @@ public class AwsServiceImpl implements AwsService {
 
 		return top10Services;
 	}
-	
-//	@Override
-//	public List<Aws> getBillingDetails(String serviceName, String startDate, String endDate, Integer months) {
-//	    List<Aws> billingDetails;
-//
-//	    if ((startDate != null && endDate != null) || (months != null && months > 0)) {
-//	        if (serviceName != null && !serviceName.isEmpty()) {
-//	            // If a specific service is selected
-//	            if (startDate != null && endDate != null) {
-//	                billingDetails = getDataByServiceAndDateRange(serviceName, startDate, endDate);
-//	            } else {
-//	                billingDetails = getBillingDetailsForDuration(serviceName, months);
-//	            }
-//	        } else {
-//	            // If no specific service is selected
-//	            if (startDate != null && endDate != null) {
-//	                billingDetails = getAllDataByDateRange(startDate, endDate);
-//	            } else if (months != null && months > 0) {
-//	                billingDetails = getBillingDetailsForDuration(months);
-//	            } else {
-//	                throw new IllegalArgumentException("Please enter a valid duration in months");
-//	            }
-//	        }
-//	    } else {
-//	        throw new IllegalArgumentException("Please provide service and dates or a valid duration to get the data");
-//	    }
-//
-//	    return billingDetails;
-//	}
-
 
 	@Override
 	public List<Aws> getBillingDetails(String serviceName, String startDate, String endDate, Integer months) {
@@ -339,39 +280,16 @@ public class AwsServiceImpl implements AwsService {
 				} else if (months != null && months > 0) {
 					billingDetails = getBillingDetailsForDuration(months);
 				} else {
-					//billingDetails = getAllServices(); // Get all AWS billing details
+					// billingDetails = getAllServices(); // Get all AWS billing details
 					throw new IllegalArgumentException("Please enter a valid duration in months");
 				}
 			}
-		} else {
-			//return Collections.emptyList(); // Return empty list when no parameters are provided
+			} else {
+			// return Collections.emptyList(); // Return empty list when no parameters are
+			// provided
 			throw new IllegalArgumentException("Please provide service and dates or dates or duration to get the data");
-		}
-
-	
-//	public List<Aws> getBillingDetails(String serviceName, String startDate, String endDate, Integer months) {
-//		List<Aws> billingDetails;
-//		
-//	    if ((startDate != null && endDate != null) || months != null) {
-//	        if (serviceName != null && !serviceName.isEmpty()) {
-//	            if (startDate != null && endDate != null) {
-//	                return getDataByServiceAndDateRange(serviceName, startDate, endDate);
-//	            } else {
-//	                return getBillingDetailsForDuration(serviceName, months);
-//	            }
-//	        } else {
-//	            if (startDate != null && endDate != null) {
-//	                return getAllDataByDateRange(startDate, endDate);
-//	            } else if (months != null) {
-//	                return getBillingDetailsForDuration(months);
-//	            } else {
-//	                return getAllServices(); // Get all AWS billing details
-//	            }
-//	        }
-//	    } else {
-//	        throw new IllegalArgumentException("Please provide service and dates or dates or duration to get the data");
-//	    }
-//	}
+			}
+		
 
 		// Fetch top 10 services based on their amounts
 		List<Map<String, Object>> top10Services = new ArrayList<>();
@@ -393,12 +311,6 @@ public class AwsServiceImpl implements AwsService {
 		return billingDetails;
 	}
 
-//	@Override
-//	public List<String> getDistinctService(String service) {
-//		
-//		return awsRepository.findDistinctByService(service);
-//	}
-
-	
-
 }
+
+

@@ -1,6 +1,6 @@
 package com.billing.controller;
 
-import java.util.Collections;
+
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -78,98 +78,56 @@ public class AwsController {
 		}
 	}
 
-//	@GetMapping("/billing-details")
-//	public ResponseEntity<Map<String, Object>> getBillingDetails(
-//			@RequestParam(value = "service", required = false) String service,
-//			@RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate,
-//			@RequestParam(required = false) Integer months) {
-//
-//		if (service == null && startDate == null && endDate == null && (months == null || months <= 0)) {
-//			Map<String, Object> emptyResponse = new LinkedHashMap<>();
-//			emptyResponse.put("billingDetails", Collections.emptyList());
-//			emptyResponse.put("monthlyTotalAmounts", Collections.emptyList());
-//			emptyResponse.put("totalAmount", 0.0);
-//			return ResponseEntity.ok(emptyResponse);
-//		}
-//
-//		List<Aws> billingDetails = awsService.getBillingDetails(service, startDate, endDate, months);
-//		List<Map<String, Object>> monthlyTotalAmounts = awsService.getMonthlyTotalAmounts(service, startDate, endDate,
-//				months);
-//		Double totalAmount = awsService.getTotalAmount(service, startDate, endDate, months);
-//
-//		// Create a response map
-//		Map<String, Object> response = new LinkedHashMap<>();
-//		response.put("billingDetails", billingDetails);
-//		response.put("monthlyTotalAmounts", monthlyTotalAmounts);
-//		response.put("totalAmount", totalAmount);
-//
-//		// Fetch top 10 services if no specific service is selected
-//		if (service == null || service.isEmpty()) {
-//			List<Map<String, Object>> top10Services = awsService.getTop10Services(billingDetails);
-//			response.put("top10Services", top10Services);
-//		}
-//
-//		if (billingDetails.isEmpty()) {
-//			//return ResponseEntity.noContent().build();
-//			  Map<String, Object> emptyBillingDetailsResponse = new LinkedHashMap<>();
-//	            emptyBillingDetailsResponse.put("message", "No billing details available.");
-//	            return ResponseEntity.ok(emptyBillingDetailsResponse);
-//	        
-//		} else {
-//			return ResponseEntity.ok(response);
-//		}
-//	}
-	
 
-    @GetMapping("/billing-details")
-    public ResponseEntity<Map<String, Object>> getBillingDetails(
-            @RequestParam(value = "service", required = false) String service,
-            @RequestParam(required = false) String startDate,
-            @RequestParam(required = false) String endDate,
-            @RequestParam(required = false) Integer months) {
 
-        if (service == null && startDate == null && endDate == null && (months == null || months <= 0)) {
-        	Map<String, Object> emptyBillingDetailsResponse = new LinkedHashMap<>();
-            emptyBillingDetailsResponse.put("message", "Enter valid input.");
-        }
 
-        try {
-            List<Aws> billingDetails = awsService.getBillingDetails(service, startDate, endDate, months);
-            List<Map<String, Object>> monthlyTotalAmounts = awsService.getMonthlyTotalAmounts(service, startDate, endDate, months);
-            Double totalAmount = awsService.getTotalAmount(service, startDate, endDate, months);
 
-            // Create a response map
-            Map<String, Object> response = new LinkedHashMap<>();
-            response.put("billingDetails", billingDetails);
-            response.put("monthlyTotalAmounts", monthlyTotalAmounts);
-            response.put("totalAmount", totalAmount);
+	    @GetMapping("/billing-details")
+	    public ResponseEntity<Map<String, Object>> getBillingDetails(
+	            @RequestParam(value = "service", required = false) String service,
+	            @RequestParam(required = false) String startDate,
+	            @RequestParam(required = false) String endDate,
+	            @RequestParam(required = false) Integer months) {
 
-            // Fetch top 10 services if no specific service is selected
-            if (service == null || service.isEmpty()) {
-                List<Map<String, Object>> top10Services = awsService.getTop10Services(billingDetails);
-                response.put("top10Services", top10Services);
-            }
+	        if (service == null && startDate == null && endDate == null && (months == null || months <= 0)) {
+	            Map<String, Object> emptyBillingDetailsResponse = new LinkedHashMap<>();
+	            emptyBillingDetailsResponse.put("message", "Enter valid input.");
+	            return ResponseEntity.badRequest().body(emptyBillingDetailsResponse);
+	        }
 
-            if (billingDetails.isEmpty()) {
-                Map<String, Object> emptyBillingDetailsResponse = new LinkedHashMap<>();
-                emptyBillingDetailsResponse.put("message", "No billing details available.");
-                return ResponseEntity.ok(emptyBillingDetailsResponse);
-            } else {
-                return ResponseEntity.ok(response);
-            }
-        } catch (IllegalArgumentException e) {
-            // Handle the exception, return an error response or log the error message
-            Map<String, Object> errorResponse = new LinkedHashMap<>();
-            errorResponse.put("error", e.getMessage());
-            return ResponseEntity.badRequest().body(errorResponse);
-        }
-    }
-    
-    
-//    @GetMapping("/ServiceNames")
-//    public ResponseEntity<List<String>> getDistinctServiceNames(String service) {
-//        List<String> distinctServiceNames = awsService.getDistinctService(service);
-//        return ResponseEntity.ok(distinctServiceNames);
-//    }
+	        try {
+	            // Replace the following placeholders with your actual service calls
+	            List<Aws> billingDetails = awsService.getBillingDetails(service, startDate, endDate, months);
+	            List<Map<String, Object>> monthlyTotalAmounts = awsService.getMonthlyTotalAmounts(service, startDate,
+	                    endDate, months);
+	            Double totalAmount = awsService.getTotalAmount(service, startDate, endDate, months);
 
-}
+	            // Create a response map
+	            Map<String, Object> response = new LinkedHashMap<>();
+	            response.put("billingDetails", billingDetails);
+	            response.put("monthlyTotalAmounts", monthlyTotalAmounts);
+	            response.put("totalAmount", totalAmount);
+
+	            // Fetch top 10 services if no specific service is selected
+	            if (service == null || service.isEmpty()) {
+	                List<Map<String, Object>> top10Services = awsService.getTop10Services(billingDetails);
+	                response.put("top10Services", top10Services);
+	            } 
+
+	            if (billingDetails.isEmpty()) {
+	                Map<String, Object> emptyBillingDetailsResponse = new LinkedHashMap<>();
+	                emptyBillingDetailsResponse.put("message", "No billing details available.");
+	                return ResponseEntity.ok(emptyBillingDetailsResponse);
+	            } else {
+	                return ResponseEntity.ok(response);
+	            }
+	        } catch (IllegalArgumentException e) {
+	            // Handle the exception, return an error response or log the error message
+	            Map<String, Object> errorResponse = new LinkedHashMap<>();
+	            errorResponse.put("error", e.getMessage());
+	            return ResponseEntity.badRequest().body(errorResponse);
+	        }
+	    }
+	}
+
+

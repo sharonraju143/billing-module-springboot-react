@@ -3,6 +3,7 @@ package com.billing.entity;
 import java.util.Date;
 
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
@@ -16,19 +17,22 @@ import lombok.NoArgsConstructor;
 public class Azure {
 	
 	    @Id
+	    @Field("_id")
 	    private String id;
-	    private String resourceId;
+	   
+	    @Field("ResourceType")
 	    private String resourceType;
-	    private String resourceLocation;
-	    private String resourceGroupName;
-	    private String serviceName;
-	    private String meter;
-	    private String tags;
+	    
+	   @Field("CostUSD")
 	    private double costUSD;
-	    private double cost;
+	   
+	   @Field("Cost")
+	   private double cost;
+	   
+	   @Field("Currency")
 	    private String currency;
 
-
+	   @Field("UsageDate")
 	    private Date usageDate;
 	    }
 	

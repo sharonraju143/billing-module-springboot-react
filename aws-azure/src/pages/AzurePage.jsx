@@ -1,41 +1,45 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Button, Card, Grid } from "@mui/material";
-import {  azureService, listService } from "../services/Services";
+import { azureService, gcpService } from "../services/Services";
 import DurationSelector from "../components/DurationSelector";
-import AwsTable from "../tables/AwsTable";
-import ServiceSelector from "../components/ServiceSelector";
 import DateSelector from "../components/DateSelector";
 import Paper from "@mui/material/Paper";
 import Sidenav from "../components/Sidenav";
 import Navbar from "../components/Navbar";
 import { Box } from "@mui/material";
 import Typography from "@mui/material/Typography";
-import BarChat from "../components/BarChart";
-import ServicesChart from "../components/ServicesChart";
-import ServicesPieChart from "../components/servicesPiechart";
-import ResourceSelector from "../components/ResourceSelector";
-
+import toast from "react-hot-toast";
+import GcpMonthlyTotalBillsChart from "../components/Gcp/GcpMonthlyTotalBillsChart";
+import TopServiceDescPieChart from "../components/Gcp/TopServiceDescPieChart";
+import AzureSelector from "../components/Azure/AzureSelector";
+import AzureTable from "../tables/AzureTable";
+import TopResourseTypeHorz from "../components/Azure/TopResourseTypeHorz";
+import TopResourceTypePieChart from "../components/Azure/TopResourseTypePieChart";
 
 export const AzurePage = () => {
-
-  //const [service, setService] = useState("");
-  const [resource, setResource] = useState(""); 
+  const [resourseType, setResourseType] = useState("");
   const [sidenavOpen, setSidenavOpen] = useState(false);
   const [dateRange, setDateRange] = useState({
     startDate: "",
     endDate: "",
   });
   const [months, setMonths] = useState(0);
-  const [display,setDisplay]=useState(false)
-
+  const [display, setDisplay] = useState(false);
+  const [isDateDisabled, setIsDateDisabled] = useState(false);
+  const [isMonthDisabled, setIsMonthDisabled] = useState(false);
   const [data, setData] = useState([]);
-  
+  const [submitClicked, setSubmitClicked] = useState(false);
+
+  const formattedTotalCost = data?.totalCost
+    ? parseFloat(data.totalCost).toFixed(2)
+    : null;
 
   const handleStartDateChange = (event) => {
     setDateRange({
       ...dateRange,
       startDate: event.target.value,
     });
+    setIsMonthDisabled(event.target.value !== "" || dateRange.endDate !== "");
   };
 
   const handleEndDateChange = (event) => {
@@ -43,50 +47,54 @@ export const AzurePage = () => {
       ...dateRange,
       endDate: event.target.value,
     });
+    setIsMonthDisabled(dateRange.startDate !== "" || event.target.value !== "");
   };
 
   const handleMonthChange = (event) => {
     setMonths(event.target.value);
-    console.log(display)
-   
-    
+    setDisplay(true);
+    setIsDateDisabled(event.target.value !== "0");
   };
 
-  // const handleServiceChange = (event) => {
-  //   setService(event.target.value);
-  // };
+  const handleReset = () => {
+    setResourseType("");
+    setDateRange({
+      startDate: "",
+      endDate: "",
+    });
+    setMonths(0);
+    setIsDateDisabled(false);
+    setIsMonthDisabled(false);
+    setData([]);
+    setSubmitClicked(false);
+    setDisplay(false);
+  };
 
-  const handleResourceChange = (event) => {
-    setResource(event.target.value); // Update state variable setter function
+  const handleSubmitClicked = () => {
+    forAzureGet();
+    setSubmitClicked(false);
+  };
+
+  const handleServiceChange = (event) => {
+    setResourseType(event.target.value);
   };
 
   const toggleSidenav = () => {
     setSidenavOpen(!sidenavOpen);
   };
 
-  const resetFilters = () => {
-  //  setService("");
-    setDateRange({
-      startDate: "",
-      endDate: "",
-    });
-    setMonths(0);
-  };
-
   const forAzureGet = async () => {
-    try {
-      const res = await azureService(
-        //service
-        resource,
-        dateRange.startDate,
-        dateRange.endDate,
-        months
-      );
-      console.log(res);
-      setData(res);
-    } catch (error) {
-      console.log(error);
-    }
+    azureService(resourseType, dateRange.startDate, dateRange.endDate, months)
+      .then((res) => {
+        console.log(res);
+        setData(res);
+        if (res.message === "No billing details available.") {
+          toast.error("Please select required fields");
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   const bodyStyle = {
@@ -109,37 +117,6 @@ export const AzurePage = () => {
   const DateDisabled = () => {
     return months !== 0;
   };
-useEffect(()=>{
-setDisplay(true)
-},[display])
-  useEffect(() => {
-    // Load data from localStorage on component mount
-   // const savedService = localStorage.getItem("service");
-   const savedResource = localStorage.getItem("resource");
-    const savedStartDate = localStorage.getItem("startDate");
-    const savedEndDate = localStorage.getItem("endDate");
-    const savedMonths = localStorage.getItem("months");
-
-    //if (savedService) setService(savedService);
-    if (savedResource) setResource(savedResource);
-    if (savedStartDate) setDateRange({ ...dateRange, startDate: savedStartDate });
-    if (savedEndDate) setDateRange({ ...dateRange, endDate: savedEndDate });
-    if (savedMonths) setMonths(savedMonths);
-  }, []);
-
-  const updateLocalStorage = () => {
-    // Save state to localStorage whenever it changes
-  //  localStorage.setItem("service", service);
-  localStorage.setItem("resource",resource);
-    localStorage.setItem("startDate", dateRange.startDate);
-    localStorage.setItem("endDate", dateRange.endDate);
-    localStorage.setItem("months", months);
-  };
-
-  useEffect(() => {
-    forAzureGet();
-    updateLocalStorage();
-  }, [ resource, dateRange.endDate, dateRange.startDate, months]);
 
   return (
     <div style={bodyStyle}>
@@ -151,8 +128,19 @@ setDisplay(true)
 
           <Box
             component="main"
-            sx={{ ...contentStyle, marginLeft: sidenavOpen ? 250 : 0, width: "100%", flexGrow:1, }}
+            sx={{
+              ...contentStyle,
+              marginLeft: sidenavOpen ? 250 : 0,
+              width: "100%",
+              flexGrow: 1,
+            }}
           >
+            <Typography
+              variant="h5"
+              sx={{ marginBottom: 3, textAlign: "center" }}
+            >
+              Azure Billing-Details
+            </Typography>
             <Card sx={{ px: 2, py: 4, m: 2 }}>
               <Box
                 component={"div"}
@@ -164,10 +152,10 @@ setDisplay(true)
               >
                 <Grid container spacing={3}>
                   <Grid item xs={12} sm={6} md={6} lg={4} xl={4}>
-                    <h5>Select Resource</h5>
-                    <ResourceSelector
-                      resource={resource}
-                      handleServiceChange={handleResourceChange}
+                    <h5>Select Service</h5>
+                    <AzureSelector
+                      resourseType={resourseType}
+                      handleServiceChange={handleServiceChange}
                     />
                   </Grid>
 
@@ -178,21 +166,30 @@ setDisplay(true)
                       handleEndDateChange={handleEndDateChange}
                       dateRange={dateRange}
                       DateDisabled={DateDisabled}
+                      disabled={isDateDisabled} // Pass isDateDisabled as a prop here
                     />
                   </Grid>
 
-                  <Grid item xs={12} sm={6} md={6} lg={2 } xl={2}>
+                  <Grid item xs={12} sm={6} md={6} lg={2} xl={1.9}>
                     <h5>select Duration</h5>
                     <DurationSelector
                       handleMonthChange={handleMonthChange}
                       months={months}
                       MonthDisabled={MonthDisabled}
+                      disabled={isMonthDisabled}
                     />
                   </Grid>
 
                   <Grid item xs={6} md={0.8} sm={12}>
-                    <Button variant="outlined" onClick={resetFilters}>
+                    <Button variant="outlined" onClick={handleReset}>
                       Reset
+                    </Button>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={handleSubmitClicked}
+                    >
+                      Submit
                     </Button>
                   </Grid>
                 </Grid>
@@ -200,47 +197,63 @@ setDisplay(true)
             </Card>
 
             <Grid container spacing={3}>
+              {/* Barchart  */}
               <Grid sx={{ px: 2, py: 4, m: 2 }} item xs={11.2} md={6} lg={8}>
-                {(data?.monthlyTotalAmounts?.length > 0 && resource) ||
-                (!resource &&
-                  ((dateRange.startDate && dateRange.endDate) || months)) ? (
-                  <BarChat data={data?.monthlyTotalAmounts} />
-                ) : (
-                  <div className="chart-container">
-                    <div className="headtag">
-                      <h4>Bar Chart</h4>
-                      <p>No data available</p>
+                {data &&
+                  ((data?.monthlyTotalBills &&
+                    Object.keys(data.monthlyTotalBills).length > 0 &&
+                    resourseType) ||
+                  (!resourseType &&
+                    ((dateRange.startDate && dateRange.endDate) || months)) ? (
+                    <GcpMonthlyTotalBillsChart
+                      monthlyTotalBills={data?.monthlyTotalBills}
+                    />
+                  ) : (
+                    <div className="chart-container">
+                      <div className="headtag">
+                        <GcpMonthlyTotalBillsChart />
+                      </div>
                     </div>
-                  </div>
-                )}
+                  ))}
               </Grid>
 
-              {data?.totalAmount && (
-                <Grid sx={{ px: 2, py: 4, m: 2 }} item xs={11.2} md={6} lg={3}>
-                  <Paper
-                    sx={{
-                      p: 2,
-                      display: "flex",
-                      flexDirection: "column",
-                      height: 250,
-                      padding: 5,
-                      backgroundColor: "#d3d3f3",
-                    }}
-                  >
-                    <h5>Total Amount</h5>
+              {/* TotalCost */}
+              <Grid sx={{ px: 2, py: 4, m: 2 }} item xs={11.2} md={6} lg={3}>
+                <Paper
+                  sx={{
+                    p: 2,
+                    display: "flex",
+                    flexDirection: "column",
+                    height: 250,
+                    padding: 5,
+                    backgroundColor: "#d3d3f3",
+                  }}
+                >
+                  <h5>Total Amount</h5>
+                  {formattedTotalCost !== null ? (
                     <Typography component="p" variant="h6">
-                      ${data?.totalAmount}
+                      ${formattedTotalCost}
                     </Typography>
-                  </Paper>
-                </Grid>
-              )}
-
-              <Grid sx={{ px: 2, py: 4, m: 2 }} item xs={11.2} md={6} lg={7}>
-                <ServicesChart dataset={data && data?.top10Services} />
+                  ) : (
+                    <Typography component="p" variant="body1">
+                      $0.00
+                    </Typography>
+                  )}
+                </Paper>
               </Grid>
 
+              {/* ServicesChart */}
+              <Grid sx={{ px: 2, py: 4, m: 2 }} item xs={11.2} md={6} lg={7}>
+                <TopResourseTypeHorz
+                  top5ResourceTypes={data && data?.top5ResourceTypes}
+                />
+              </Grid>
+
+              {/* ServicesPieChart*/}
               <Grid sx={{ px: 2, py: 4, m: 2 }} item xs={11.2} md={6} lg={4}>
-                <ServicesPieChart dataset={data && data?.top10Services} />
+                <TopResourceTypePieChart
+                  top5ResourceTypes={data && data.top5ResourceTypes}
+                />
               </Grid>
             </Grid>
 
@@ -261,7 +274,7 @@ setDisplay(true)
                     lg={12}
                     className="mx-auto mx-sm-0"
                   >
-                    <AwsTable data={data.billingDetails} />
+                    <AzureTable data={data?.billingDetails} />
                   </Grid>
                 </Grid>
               </Box>
@@ -271,7 +284,6 @@ setDisplay(true)
       </React.Fragment>
     </div>
   );
- 
 };
 
 export default AzurePage;

@@ -85,22 +85,17 @@ export const AwsPage = () => {
   };
 
   const forAwsGet = async () => {
-    
-       awsService(
-        service,
-        dateRange.startDate,
-        dateRange.endDate,
-        months
-      ).then(res => {
+    awsService(service, dateRange.startDate, dateRange.endDate, months)
+      .then((res) => {
         console.log(res);
         setData(res);
-        if(res.message == "No billing details available."){  
-          toast.error("Please select required fields")
+        if (res.message == "No billing details available.") {
+          toast.error("Please select required fields");
         }
-      
-      }).catch ((error)  =>{
-      console.log(error);
-    })
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   const bodyStyle = {
@@ -148,7 +143,6 @@ export const AwsPage = () => {
     localStorage.setItem("months", months);
   };
 
-
   return (
     <div style={bodyStyle}>
       <React.Fragment>
@@ -166,6 +160,12 @@ export const AwsPage = () => {
               flexGrow: 1,
             }}
           >
+            <Typography
+              variant="h5"
+              sx={{ marginBottom: 3, textAlign: "center" }}
+            >
+              AWS Billing-Details
+            </Typography>
             <Card sx={{ px: 2, py: 4, m: 2 }}>
               <Box
                 component={"div"}
@@ -222,7 +222,6 @@ export const AwsPage = () => {
             </Card>
 
             <Grid container spacing={3}>
-
               {/* Barchart  */}
               <Grid sx={{ px: 2, py: 4, m: 2 }} item xs={11.2} md={6} lg={8}>
                 {(data?.monthlyTotalAmounts?.length > 0 && service) ||
@@ -232,15 +231,13 @@ export const AwsPage = () => {
                 ) : (
                   <div className="chart-container">
                     <div className="headtag">
-                      
                       <BarChat />
-                      
                     </div>
                   </div>
                 )}
               </Grid>
 
-                  {/* Totalamount */}
+              {/* Totalamount */}
               <Grid sx={{ px: 2, py: 4, m: 2 }} item xs={11.2} md={6} lg={3}>
                 <Paper
                   sx={{
@@ -265,12 +262,12 @@ export const AwsPage = () => {
                 </Paper>
               </Grid>
 
-                    {/* ServicesChart*/}
+              {/* ServicesChart*/}
               <Grid sx={{ px: 2, py: 4, m: 2 }} item xs={11.2} md={6} lg={7}>
                 <ServicesChart dataset={data && data?.top10Services} />
               </Grid>
 
-                    {/* ServicesPieChart*/}
+              {/* ServicesPieChart*/}
               <Grid sx={{ px: 2, py: 4, m: 2 }} item xs={11.2} md={6} lg={4}>
                 <ServicesPieChart dataset={data && data?.top10Services} />
               </Grid>
