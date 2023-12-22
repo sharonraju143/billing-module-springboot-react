@@ -72,6 +72,31 @@ export const GcpPage = () => {
   console.log(serviceDescription ,"serviceDescription")
 
   const handleSubmitClicked = () => {
+    
+    const isAnySelectorChosen =
+    serviceDescription || (dateRange.startDate && dateRange.endDate) || months !== 0;
+
+  if (!isAnySelectorChosen) {
+    toast.error("Please select required fields");
+    return;
+  }
+
+//   const  iss=
+//   serviceDescription && (dateRange.startDate && dateRange.endDate) || months !== 0;
+
+// if (!iss) {
+//   toast.error("Please select dates or months");
+//   return;
+// }
+const isServiceChosen = !!serviceDescription;
+const isDateSelected = dateRange.startDate && dateRange.endDate;
+const isMonthSelected = months !== 0;
+
+if (isServiceChosen && !(isDateSelected || isMonthSelected)) {
+  toast.error("Select dates or months to get the data");
+  return;
+}
+
     forGcpGet();
     setSubmitClicked(false);
   };
@@ -157,7 +182,7 @@ export const GcpPage = () => {
                 }}
               >
                 <Grid container spacing={3}>
-                  <Grid item xs={12} sm={6} md={6} lg={4} xl={4}>
+                  <Grid item xs={12} sm={6} md={4} lg={4} xl={4}>
                     <h5>Select Service</h5>
                     <GcpSelector
                       serviceDescription={serviceDescription}
@@ -208,7 +233,7 @@ export const GcpPage = () => {
                 {data &&
                   ((data?.monthlyTotalBills &&
                     Object.keys(data.monthlyTotalBills).length > 0 &&
-                    serviceDescription) ||
+                    serviceDescription) || 
                   (!serviceDescription &&
                     ((dateRange.startDate && dateRange.endDate) || months)) ? (
                     <GcpMonthlyTotalBillsChart

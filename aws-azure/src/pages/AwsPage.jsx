@@ -184,7 +184,7 @@ export const AwsPage = () => {
                     />
                   </Grid>
 
-                  <Grid item xs={12} sm={6} md={6} lg={5} xl={5}>
+                  <Grid item xs={12} sm={6} md={6} lg={5} xl={4.5}>
                     <h5>select Date</h5>
                     <DateSelector
                       handleStartDateChange={handleStartDateChange}
@@ -205,7 +205,7 @@ export const AwsPage = () => {
                     />
                   </Grid>
 
-                  <Grid item xs={6} md={0.8} sm={12}>
+                  <Grid item xs={6} md={0.8} sm={12} xl={1}>
                     <Button variant="outlined" onClick={handleReset}>
                       Reset
                     </Button>

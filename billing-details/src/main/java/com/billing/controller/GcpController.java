@@ -121,9 +121,12 @@ public class GcpController {
 	    // Rest of your existing logic here...
 	    // Calculate totalCost, top5Services, monthlyTotalBills, and prepare the response map
 
-	    if (billingDetails.isEmpty()) {
-          return ResponseEntity.status(HttpStatus.NO_CONTENT).body(new LinkedHashMap<>());
-      }
+	    if (startDate != null && endDate != null && billingDetails.isEmpty()) {
+            Map<String, Object> emptyBillingDetailsResponse = new LinkedHashMap<>();
+            emptyBillingDetailsResponse.put("message", "No billing details available.");
+            return ResponseEntity.ok(emptyBillingDetailsResponse);
+        } else {
+         
 
       double totalCost = billingDetails.stream().mapToDouble(Gcp::getCost).sum();
 
@@ -135,7 +138,8 @@ public class GcpController {
 	    // Create the response map
 	    Map<String, Object> response = new LinkedHashMap<>();
 	    response.put("billingDetails", billingDetails);
-	    response.put("totalCost", totalCost);
+	    response.put("t"
+	    		+ "otalCost", totalCost);
 	    response.put("monthlyTotalBills", monthlyTotalBills);
 	    if (!top5Services.isEmpty()) {
 	        response.put("top5ServiceDescriptions", top5Services);
@@ -144,4 +148,5 @@ public class GcpController {
 	    return ResponseEntity.ok(response);
 	}
 
+	}
 }

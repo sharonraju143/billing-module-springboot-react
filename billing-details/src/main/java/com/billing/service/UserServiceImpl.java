@@ -18,6 +18,9 @@ import com.billing.repository.UserRepository;
 
 @Service
 public class UserServiceImpl implements UserService {
+	
+	
+	
 	@Autowired
 	private UserRepository userRepository;
 
@@ -27,17 +30,7 @@ public class UserServiceImpl implements UserService {
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 
-//	@Override
-//	public UserDto createUser(UserDto userDto) {
-//		User user = modelMapper.map(userDto, User.class);
-//		user.setRoles("ROLE_USER");
-//		user.setPassword(passwordEncoder.encode(user.getPassword()));
-//		user.setId(UUID.randomUUID().toString());
-//		user.setActive(true);
-//		User saveduser = userRepository.save(user);
-//		UserDto savedUserDto = modelMapper.map(saveduser, UserDto.class);
-//		return savedUserDto;
-//	}
+
 	
 
 	@Override
@@ -100,5 +93,7 @@ public class UserServiceImpl implements UserService {
 		User user = modelMapper.map(userDto, User.class);
 		userRepository.save(user);
 	}
+
+	
 
 }

@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.billing.entity.Gcp;
+import com.billing.exception.NoDataFoundException;
 import com.billing.repository.GcpRespository;
 import com.billing.service.GcpService;
 
@@ -29,7 +30,7 @@ public class GcpServiceImpl implements GcpService {
 		return gcpRepository.findAll();
 	}
 
-	@Override
+	@Override 
 	public List<String> getDistinctServiceDescriptions() {
 		List<String> serviceDescriptions = gcpRepository.findDistinctServiceDescriptionBy();
 		return extractUniqueServiceDescriptions(serviceDescriptions);
@@ -107,6 +108,11 @@ public class GcpServiceImpl implements GcpService {
 	        billingDetails = getAllDataBydateRange(startDate, endDate);
 	    } else {
 	        throw new IllegalArgumentException("Please provide service and dates or dates or duration to get the data");
+	    }
+	    if (billingDetails == null || billingDetails.isEmpty()) {
+	        // Return an empty list or throw an exception for "No data" scenario
+	        // return new ArrayList<>(); // Empty list
+	        throw new NoDataFoundException("No data found for specified criteria");
 	    }
 
 	    double totalCost = billingDetails.stream().mapToDouble(Gcp::getCost).sum();
