@@ -191,7 +191,7 @@ if (isServiceChosen && !(isDateSelected || isMonthSelected)) {
                   </Grid>
 
                   <Grid item xs={12} sm={6} md={6} lg={5} xl={5}>
-                    <h5>select Date</h5>
+                    <h5>Select Date</h5>
                     <DateSelector
                       handleStartDateChange={handleStartDateChange}
                       handleEndDateChange={handleEndDateChange}
@@ -202,7 +202,7 @@ if (isServiceChosen && !(isDateSelected || isMonthSelected)) {
                   </Grid>
 
                   <Grid item xs={12} sm={6} md={6} lg={2} xl={1.9}>
-                    <h5>select Duration</h5>
+                    <h5>Select Duration</h5>
                     <DurationSelector
                       handleMonthChange={handleMonthChange}
                       months={months}
@@ -263,11 +263,11 @@ if (isServiceChosen && !(isDateSelected || isMonthSelected)) {
                   <h5>Total Amount</h5>
                   {formattedTotalCost !== null ? (
                     <Typography component="p" variant="h6">
-                      ${formattedTotalCost}
+                      ₹{formattedTotalCost}
                     </Typography>
                   ) : (
                     <Typography component="p" variant="body1">
-                      $0.00
+                      ₹0.00
                     </Typography>
                   )}
                 </Paper>
