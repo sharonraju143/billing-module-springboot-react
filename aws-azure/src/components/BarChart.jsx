@@ -25,7 +25,7 @@ export default function ResponsiveBarChart({ data }) {
   return (
     <div className="chart-container">
         <div className="headtag">
-      <h4 >Bar Chart</h4>
+      <h4 ></h4>
       </div>
       <BarChart {...chartData} />
       </div>
