@@ -1,7 +1,7 @@
 import axios from "axios";
 import toast from "react-hot-toast";
 
-const BASE_URL = "http://localhost:9070/api"; // Assuming the base URL is the same for all endpoints
+const BASE_URL = "http://localhost:8080"; // Assuming the base URL is the same for all endpoints
 
 const getAuthHeaders = () => {
   const token = localStorage.getItem("token");
@@ -13,7 +13,7 @@ const getAuthHeaders = () => {
 
 export const UserSignUpService = async (data) => {
   try {
-    const response = await axios.post(`${BASE_URL}/users/saveuser`, data);
+    const response = await axios.post(`${BASE_URL}/auth/register`, data);
     return response.data;
   } catch (error) {
     console.error("User Sign Up Error:", error);
@@ -23,7 +23,7 @@ export const UserSignUpService = async (data) => {
 
 export const UserLoginService = async (data) => {
   try {
-    const response = await axios.post(`${BASE_URL}/users/authenticate`, data);
+    const response = await axios.post(`${BASE_URL}/auth/token`, data);
     return response.data;
   } catch (error) {
     console.error("User Login Error:", error);

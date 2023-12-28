@@ -185,7 +185,7 @@ export const AwsPage = () => {
                   </Grid>
 
                   <Grid item xs={12} sm={6} md={6} lg={5} xl={4.5}>
-                    <h5>select Date</h5>
+                    <h5>Select Date</h5>
                     <DateSelector
                       handleStartDateChange={handleStartDateChange}
                       handleEndDateChange={handleEndDateChange}
@@ -196,7 +196,7 @@ export const AwsPage = () => {
                   </Grid>
 
                   <Grid item xs={12} sm={6} md={6} lg={2} xl={1.9}>
-                    <h5>select Duration</h5>
+                    <h5>Select Duration</h5>
                     <DurationSelector
                       handleMonthChange={handleMonthChange}
                       months={months}
@@ -303,3 +303,6 @@ export const AwsPage = () => {
 };
 
 export default AwsPage;
+
+
+
