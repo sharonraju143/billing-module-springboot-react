@@ -18,7 +18,7 @@ const AzureSelector = ({ resourseType, handleServiceChange }) => {
             },
           };
 
-          const response = await axios.get("http://localhost:8080/azure/distinctresourceType", config);
+          const response = await axios.get("http://172.20.100.7:8080/azure/distinctresourceType", config);
           setServiceOptions(response.data);
           setClicked(true);
         } else {
