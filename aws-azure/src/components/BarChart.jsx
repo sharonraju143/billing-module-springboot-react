@@ -23,10 +23,10 @@ export default function ResponsiveBarChart({ data }) {
   }
 
   return (
-    <div className="chart-container">
-        <div className="headtag">
-      <h4 ></h4>
-      </div>
+    <div className="card">
+        
+      <h4 >Billing Summary</h4>
+     
       <BarChart {...chartData} />
       </div>
     

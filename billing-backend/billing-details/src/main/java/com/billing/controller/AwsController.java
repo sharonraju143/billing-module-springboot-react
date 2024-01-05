@@ -98,15 +98,17 @@ public class AwsController {
 	        try {
 	            // Replace the following placeholders with your actual service calls
 	            List<Aws> billingDetails = awsService.getBillingDetails(service, startDate, endDate, months);
-	            List<Map<String, Object>> monthlyTotalAmounts = awsService.getMonthlyTotalAmounts(service, startDate,
-	                    endDate, months);
+	           
+	            List<Map<String, Double>>  monthlyTotalAmounts =awsService.calculateMonthlyTotalBills(billingDetails);
+	                    
 	            Double totalAmount = awsService.getTotalAmount(service, startDate, endDate, months);
-
+	            List<Map<String, Object>> billingPeriod = awsService.generateBillingPeriod(startDate, endDate, months);
 	            // Create a response map
 	            Map<String, Object> response = new LinkedHashMap<>();
 	            response.put("billingDetails", billingDetails);
 	            response.put("monthlyTotalAmounts", monthlyTotalAmounts);
 	            response.put("totalAmount", totalAmount);
+	            response.put("billingPeriod", billingPeriod);
 
 	            // Fetch top 10 services if no specific service is selected
 	            if (service == null || service.isEmpty()) {

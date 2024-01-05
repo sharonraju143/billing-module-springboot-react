@@ -34,6 +34,8 @@ public interface AzureService {
 	public List<Azure> getBillingDetails(String resourseType, String startDate, String endDate, Integer months);
 
 	// getting totalcostMonthly
-	public Map<String, Double> calculateMonthlyTotalBills(List<Azure> billingDetails);
+	public List<Map<String, Double>> calculateMonthlyTotalBills(List<Azure> billingDetails);
+
+	public List<Map<String, Object>> generateBillingPeriod(String startDate, String endDate, Integer months);
 
 }

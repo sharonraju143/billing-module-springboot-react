@@ -116,37 +116,71 @@ public class GcpController {
 	        return ResponseEntity.badRequest().body(errorResponse);
 	    }
 
+//	    List<Gcp> billingDetails = gcpService.getBillingDetails(serviceDescription, startDate, endDate, months);
+//
+//	    // Rest of your existing logic here...
+//	    // Calculate totalCost, top5Services, monthlyTotalBills, and prepare the response map
+//
+//	    if (startDate != null && endDate != null && billingDetails.isEmpty()) {
+//            Map<String, Object> emptyBillingDetailsResponse = new LinkedHashMap<>();
+//            emptyBillingDetailsResponse.put("message", "No billing details available.");
+//            return ResponseEntity.ok(emptyBillingDetailsResponse);
+//        } else {
+//         
+//
+//      double totalCost = billingDetails.stream().mapToDouble(Gcp::getCost).sum();
+//
+//      // Calculate top 5 service descriptions
+//      List<Map<String, Object>> top5Services = gcpService.getTop5ServiceDescriptions(billingDetails);
+//
+//      // Calculate monthly total bills
+//     // List<Map<String, Object>> monthlyTotalBills = gcpService.calculateMonthlyTotalBills(billingDetails);
+//      
+//      
+//      List<Map<String, Object>> monthlyTotalBills = gcpService.getMonthlyTotalAmounts(serviceDescription, startDate, endDate, months);
+//      
+//      
+//      
+//	    // Create the response map
+//	    Map<String, Object> response = new LinkedHashMap<>();
+//	    response.put("billingDetails", billingDetails);
+//	    response.put("t"
+//	    		+ "otalCost", totalCost);
+//	    response.put("monthlyTotalBills", monthlyTotalBills);
+//	    if (!top5Services.isEmpty()) {
+//	        response.put("top5ServiceDescriptions", top5Services);
+//	    }
+//
+//	    return ResponseEntity.ok(response);
+//	}
+
+	    
 	    List<Gcp> billingDetails = gcpService.getBillingDetails(serviceDescription, startDate, endDate, months);
 
-	    // Rest of your existing logic here...
-	    // Calculate totalCost, top5Services, monthlyTotalBills, and prepare the response map
-
 	    if (startDate != null && endDate != null && billingDetails.isEmpty()) {
-            Map<String, Object> emptyBillingDetailsResponse = new LinkedHashMap<>();
-            emptyBillingDetailsResponse.put("message", "No billing details available.");
-            return ResponseEntity.ok(emptyBillingDetailsResponse);
-        } else {
-         
+	        Map<String, Object> emptyBillingDetailsResponse = new LinkedHashMap<>();
+	        emptyBillingDetailsResponse.put("message", "No billing details available.");
+	        return ResponseEntity.ok(emptyBillingDetailsResponse);
+	    } else {
+	        double totalCost = billingDetails.stream().mapToDouble(Gcp::getCost).sum();
 
-      double totalCost = billingDetails.stream().mapToDouble(Gcp::getCost).sum();
+	        List<Map<String, Object>> top5Services = gcpService.getTop5ServiceDescriptions(billingDetails);
 
-      // Calculate top 5 service descriptions
-      List<Map<String, Object>> top5Services = gcpService.getTop5ServiceDescriptions(billingDetails);
+	        // Update to use the revised method getMonthlyTotalAmounts
+	        List<Map<String, Double>> monthlyTotalBills = gcpService.calculateMonthlyTotalBills(billingDetails);
 
-      // Calculate monthly total bills
-      Map<String, Double> monthlyTotalBills = gcpService.calculateMonthlyTotalBills(billingDetails);
-	    // Create the response map
-	    Map<String, Object> response = new LinkedHashMap<>();
-	    response.put("billingDetails", billingDetails);
-	    response.put("t"
-	    		+ "otalCost", totalCost);
-	    response.put("monthlyTotalBills", monthlyTotalBills);
-	    if (!top5Services.isEmpty()) {
-	        response.put("top5ServiceDescriptions", top5Services);
+	        List<Map<String, Object>> billingPeriod = gcpService.generateBillingPeriod(startDate, endDate, months);
+	        
+	        Map<String, Object> response = new LinkedHashMap<>();
+	        response.put("billingDetails", billingDetails);
+	        response.put("totalCost", totalCost);
+	        response.put("monthlyTotalBills", monthlyTotalBills);
+	        response.put("billingPeriod", billingPeriod);
+	        if (!top5Services.isEmpty()) {
+	            response.put("top5ServiceDescriptions", top5Services);
+	        }
+
+	        return ResponseEntity.ok(response);
 	    }
-
-	    return ResponseEntity.ok(response);
-	}
-
 	}
 }

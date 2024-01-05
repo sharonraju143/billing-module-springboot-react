@@ -66,6 +66,11 @@ export default function AwsTable({ data, months, service, fromDate, toDate }) {
           disableSelectionOnClick
            slots={{ toolbar: GridToolbar }}
           experimentalFeatures={{ ariaV7: true }}
+          // sx={{
+          //   "&.MuiDataGrid-withBorderColor":{
+          //     backgroundColor:"gray"
+          //   }
+          // }}
         />
         ) : (
           <div style={{ textAlign: "center", padding: "20px" }}>

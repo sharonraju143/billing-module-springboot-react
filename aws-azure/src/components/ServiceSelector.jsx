@@ -10,7 +10,6 @@ const ServiceSelector = ({ service, handleServiceChange }) => {
     const fetchServiceOptions = async () => {
       try {
         const token = localStorage.getItem("token");
-
         if (token && !clicked) {
           const config = {
             headers: {
@@ -18,7 +17,7 @@ const ServiceSelector = ({ service, handleServiceChange }) => {
             },
           };
 
-          const response = await axios.get("http://localhost:9070/api/aws/distinct-services", config);
+          const response = await axios.get("http://localhost:8080/aws/distinct-services", config);
           setServiceOptions(response.data);
           setClicked(true);
         } else {
@@ -51,7 +50,9 @@ const ServiceSelector = ({ service, handleServiceChange }) => {
       color: "black",
     },
   };
-
+  // console.log("service",service)
+  // const defaultValue = service === null ? "" : service;
+  // console.log("first",defaultValue)
   return (
     <React.Fragment>
       <FormControl sx={{ ...newPropsCss }} fullWidth>
@@ -59,11 +60,14 @@ const ServiceSelector = ({ service, handleServiceChange }) => {
           fullWidth
           sx={{ ...newPropsCss, height: "2.4em" }}
           labelId="service-label"
-          value={service || ""}
+          value={service}
+          // value={defaultValue}
           onChange={handleServiceChange}
           onFocus={handleFocus}
+        
         >
-          <MenuItem value="">Select Service</MenuItem>
+          {/* <MenuItem value="" defaultValue={true} disabled>Select Service</MenuItem> */}
+          <MenuItem value={null}>Select Service</MenuItem>
           {serviceOptions.map((option, index) => (
             <MenuItem key={index} value={option} sx={{ ...newPropsCss }}>
               {option}

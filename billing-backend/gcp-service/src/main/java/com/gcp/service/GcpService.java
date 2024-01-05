@@ -38,7 +38,13 @@ public interface GcpService {
 	public List<Gcp> getBillingDetails(String serviceDescription, String startDate, String endDate , Integer months);
 
 	//getting totalcostMonthly
-	public Map<String, Double> calculateMonthlyTotalBills(List<Gcp> billingDetails);
+	//public Map<String, Double> calculateMonthlyTotalBills(List<Gcp> billingDetails);
 	
+	List<Map<String, Double>> calculateMonthlyTotalBills(List<Gcp> billingDetails);
 
+	public List<Map<String, Object>> generateBillingPeriod(String startDate, String endDate, Integer months);
+	
+	
+	//public List<Map<String, Object>> getMonthlyTotalAmounts(String serviceDesc, String startDate, String endDate,
+	                                                      //  Integer months);
 }

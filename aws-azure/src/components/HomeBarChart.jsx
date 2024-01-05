@@ -1,6 +1,9 @@
 import * as React from 'react';
 import { BarChart } from '@mui/x-charts/BarChart';
 import { axisClasses } from '@mui/x-charts';
+import { useState } from 'react';
+import { useEffect } from 'react';
+import { Grid } from '@mui/material';
 
 const chartSetting = {
   yAxis: [
@@ -117,16 +120,14 @@ const dataset = [
   // Add data for the fifth bar for the rest of the months as needed
 ];
 
-const valueFormatter = (value) => `${value}mm`;
+const valueFormatter = (value) => `${value}rs`;
 
 
 
 export default function BarsDataset() {
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
-  const [windowWidth, setWindowWidth] = React.useState(window.innerWidth);
-
-
-  React.useEffect(() => {
+  useEffect(() => {
     const handleResize = () => {
       setWindowWidth(window.innerWidth);
     };
@@ -138,59 +139,26 @@ export default function BarsDataset() {
     };
   }, []);
 
-  // Update width dynamically based on screen size
-  React.useEffect(() => {
-    const handleResize = () => {
-      setWindowWidth(window.innerWidth);
-    };
-
-    window.addEventListener('resize', handleResize);
-
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
-  }, []);
-
-  // Set the chart width based on screen size
-  React.useEffect(() => {
-    const handleResize = () => {
-      setWindowWidth(window.innerWidth);
-    };
-
-    window.addEventListener('resize', handleResize);
-
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
-  }, []);
-
-  // Update chart width based on screen size
-  React.useEffect(() => {
-    const handleResize = () => {
-      setWindowWidth(window.innerWidth);
-    };
-
-    window.addEventListener('resize', handleResize);
-
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
-  }, []);
+  const responsiveWidth = windowWidth > 768 ? 1200 : '100%';
 
   return (
-    <BarChart
-      dataset={dataset}
-      xAxis={[{ scaleType: 'band', dataKey: 'month' }]}
-      series={[
-        { dataKey: 'aws', label: 'Aws', valueFormatter },
-        { dataKey: 'git', label: 'Git', valueFormatter },
-        { dataKey: 'azure', label: 'Azure', valueFormatter },
-        { dataKey: 'gcp', label: 'Gcp', valueFormatter },
-        { dataKey: 'atlassian', label: 'Atlassian', valueFormatter }, // Add the fifth bar series
-        // ... (rest of your series configurations remain unchanged)
-      ]}
-      {...chartSetting}
-      width={windowWidth > 768 ? 1200 : '100%'} // Adjust width based on screen size
-    />
+    <Grid container  >
+    <Grid sx={{ px: 2, py: 4, m: 2 }} item xs={11.2} md={6} lg={8}>
+      <BarChart
+        dataset={dataset}
+        xAxis={[{ scaleType: 'band', dataKey: 'month' }]}
+        series={[
+          { dataKey: 'aws', label: 'Aws', valueFormatter },
+          { dataKey: 'git', label: 'Git', valueFormatter },
+          { dataKey: 'azure', label: 'Azure', valueFormatter },
+          { dataKey: 'gcp', label: 'Gcp', valueFormatter },
+          { dataKey: 'atlassian', label: 'Atlassian', valueFormatter }, // Add the fifth bar series
+          // ... (rest of your series configurations remain unchanged)
+        ]}
+        {...chartSetting}
+        width={responsiveWidth}
+      />
+    </Grid>
+  </Grid>
   );
 }

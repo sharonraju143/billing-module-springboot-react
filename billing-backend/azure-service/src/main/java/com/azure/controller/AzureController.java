@@ -81,7 +81,49 @@ public class AzureController {
 		
 		
 
-		    @GetMapping("/details")
+//		    @GetMapping("/details")
+//		    public ResponseEntity<Map<String, Object>> getBillingDetails(
+//		            @RequestParam(value="ResourseType",required = false) String resourceType,
+//		            @RequestParam(required = false) String startDate,
+//		            @RequestParam(required = false) String endDate,
+//		            @RequestParam(required = false) Integer months
+//		    ) {
+//		        List<Azure> billingDetails = azureService.getBillingDetails(resourceType, startDate, endDate, months);
+//
+//		        if (billingDetails.isEmpty()) {
+//		            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(new LinkedHashMap<>());
+//		        }
+//
+//		        double totalCost = billingDetails.stream().mapToDouble(Azure::getCost).sum();
+//		        Map<String, Double> monthlyTotalBills = azureService.calculateMonthlyTotalBills(billingDetails);
+//		        List<Map<String, Object>> top5ResourceTypes = new ArrayList<>();
+//
+//		        // Check if only resourceType is selected
+//		        if (resourceType != null && startDate == null && endDate == null && months == null) {
+//		            // If only resourceType is selected, return only billingDetails, totalCost, and monthlyTotalBills
+//		            Map<String, Object> response = new LinkedHashMap<>();
+//		            response.put("billingDetails", billingDetails);
+//		            response.put("totalCost", totalCost);
+//		            response.put("monthlyTotalBills", monthlyTotalBills);
+//		            return ResponseEntity.ok(response);
+//		        }
+//
+//		        // If other parameters (startDate, endDate, months) are used, get top 5 resource types
+//		        top5ResourceTypes = azureService.getTop5ResourseType(billingDetails);
+//
+//		        // Prepare the response map
+//		        Map<String, Object> response = new LinkedHashMap<>();
+//		        response.put("billingDetails", billingDetails);
+//		        response.put("totalCost", totalCost);
+//		        response.put("monthlyTotalBills", monthlyTotalBills);
+//		        if (!top5ResourceTypes.isEmpty()) {
+//		            response.put("top5ResourceTypes", top5ResourceTypes);
+//		        }
+//
+//		        return ResponseEntity.ok(response);
+//		    }
+		
+		 @GetMapping("/details")
 		    public ResponseEntity<Map<String, Object>> getBillingDetails(
 		            @RequestParam(value="ResourseType",required = false) String resourceType,
 		            @RequestParam(required = false) String startDate,
@@ -95,8 +137,9 @@ public class AzureController {
 		        }
 
 		        double totalCost = billingDetails.stream().mapToDouble(Azure::getCost).sum();
-		        Map<String, Double> monthlyTotalBills = azureService.calculateMonthlyTotalBills(billingDetails);
+		        List<Map<String, Double>> monthlyTotalBills = azureService.calculateMonthlyTotalBills(billingDetails);
 		        List<Map<String, Object>> top5ResourceTypes = new ArrayList<>();
+		        List<Map<String, Object>> billingPeriod = azureService.generateBillingPeriod(startDate, endDate, months);
 
 		        // Check if only resourceType is selected
 		        if (resourceType != null && startDate == null && endDate == null && months == null) {
@@ -105,6 +148,8 @@ public class AzureController {
 		            response.put("billingDetails", billingDetails);
 		            response.put("totalCost", totalCost);
 		            response.put("monthlyTotalBills", monthlyTotalBills);
+		            response.put("billingPeriod", billingPeriod);
+		            
 		            return ResponseEntity.ok(response);
 		        }
 
@@ -116,6 +161,7 @@ public class AzureController {
 		        response.put("billingDetails", billingDetails);
 		        response.put("totalCost", totalCost);
 		        response.put("monthlyTotalBills", monthlyTotalBills);
+		        response.put("billingPeriod", billingPeriod);
 		        if (!top5ResourceTypes.isEmpty()) {
 		            response.put("top5ResourceTypes", top5ResourceTypes);
 		        }

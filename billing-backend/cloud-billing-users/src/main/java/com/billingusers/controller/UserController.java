@@ -9,6 +9,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,6 +26,7 @@ import com.billingusers.exceptions.UsernameAlreadyExistsException;
 import com.billingusers.service.UserService;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/auth")
 public class UserController {
 
@@ -90,7 +92,10 @@ public class UserController {
 		Authentication authenticate = authenticationManager.authenticate(
 				new UsernamePasswordAuthenticationToken(loginRequest.getUserName(), loginRequest.getPassword()));
 		if (authenticate.isAuthenticated()) {
-			return userService.generateToken(loginRequest.getUserName());
+			String res = userService.generateToken(loginRequest.getUserName());
+			String result = "{\"token\":\"" + res + "\"}";
+			return result;
+			//return userService.generateToken(loginRequest.getUserName());
 		} else {
 			throw new RuntimeException("invalid access");
 		}

@@ -11,6 +11,8 @@ import ProtectedRoute from "./protectedRoute/ProtectedRoute";
 import LoginPage from "./authenticate/Login";
 import Login from "./authenticate/Login";
 import Signup from "./authenticate/Signup";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
 function App() {
 

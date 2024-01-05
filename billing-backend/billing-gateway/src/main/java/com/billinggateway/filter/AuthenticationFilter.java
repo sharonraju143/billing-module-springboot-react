@@ -14,8 +14,7 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
     @Autowired
     private RouteValidator validator;
 
-    //    @Autowired
-//    private RestTemplate template;
+
     @Autowired
     private JwtUtil jwtUtil;
 

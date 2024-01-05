@@ -17,8 +17,8 @@ public interface AwsService {
 
 	public List<Aws> getAllServices();
 
-	public List<Map<String, Object>> getMonthlyTotalAmounts(String serviceName, String startDate, String endDate,
-			Integer months);
+//	public List<Map<String, Object>> getMonthlyTotalAmounts(String serviceName, String startDate, String endDate,
+//			Integer months);
 
 	public Double getTotalAmount(String serviceName, String startDate, String endDate, Integer months);
 
@@ -33,6 +33,10 @@ public interface AwsService {
 	public List<Aws> getBillingDetails(String serviceName, String startDate, String endDate, Integer months);
 
 	public List<Map<String, Object>> getTop10Services(List<Aws> billingDetails);
+
+	public List<Map<String, Object>> generateBillingPeriod(String startDate, String endDate, Integer months);
+
+	List<Map<String, Double>> calculateMonthlyTotalBills(List<Aws> billingDetails);
 	
 	
 	// public List<String> getDistinctService(String service);

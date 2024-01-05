@@ -19,7 +19,7 @@ const GcpSelector = ({ serviceDescription, handleServiceChange }) => {
           };
 
           const response = await axios.get(
-            "http://localhost:9070/api/gcp/distinctServiceDescriptions",
+            "http://localhost:8080/gcp/distinctServiceDescriptions",
             config
           );
           setServiceOptions(response.data);
@@ -71,9 +71,7 @@ const GcpSelector = ({ serviceDescription, handleServiceChange }) => {
         onFocus={handleFocus}
       >
       
-        <MenuItem  disabled selected >
-          Select Service
-          </MenuItem>
+      <MenuItem value={null}>Select service</MenuItem>
         {serviceOptions.map((option, index) => (
           <MenuItem key={index} value={option} sx={{ ...newPropsCss }}>
             {option}
