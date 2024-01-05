@@ -5,11 +5,9 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,7 +24,6 @@ import com.billingusers.exceptions.UsernameAlreadyExistsException;
 import com.billingusers.service.UserService;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/auth")
 public class UserController {
 
@@ -52,28 +49,24 @@ public class UserController {
 	}
 
 	@GetMapping("/getallusers")
-	@PreAuthorize("hasAuthority('ROLE_ADMIN')")
 	public ResponseEntity<List<UserDto>> getAllUsers() {
 		List<UserDto> users = userService.getAllUsers();
 		return new ResponseEntity<>(users, HttpStatus.OK);
 	}
 
 	@GetMapping("/getuserbyid/{id}")
-	@PreAuthorize("hasAuthority('ROLE_USER')")
 	public ResponseEntity<UserDto> getUserById(@PathVariable("id") String userId) {
 		UserDto user = userService.getUserById(userId);
 		return new ResponseEntity<>(user, HttpStatus.OK);
 	}
 
 	@GetMapping("/getuserbyname/{username}")
-	@PreAuthorize("hasAuthority('ROLE_USER')")
 	public ResponseEntity<UserDto> getUserByUsername(@PathVariable("username") String userName) {
 		UserDto user = userService.getUserByUsername(userName);
 		return new ResponseEntity<>(user, HttpStatus.OK);
 	}
 
 	@PutMapping("/updateuser/{id}")
-	@PreAuthorize("hasAuthority('ROLE_USER')")
 	public ResponseEntity<UserDto> updateUser(@PathVariable("id") String userId, @RequestBody UserDto user) {
 		user.setId(userId);
 		UserDto updatedUser = userService.updateUser(user);
@@ -81,7 +74,6 @@ public class UserController {
 	}
 
 	@DeleteMapping("/deleteuser/{id}")
-	@PreAuthorize("hasAuthority('ROLE_USER')")
 	public ResponseEntity<String> deleteUser(@PathVariable("id") String userId) {
 		userService.deleteUser(userId);
 		return new ResponseEntity<>("User successfully deleted", HttpStatus.OK);
