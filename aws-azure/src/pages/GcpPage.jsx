@@ -426,7 +426,7 @@ export const GcpPage = () => {
                         paddingLeft: "4px",
                       }}
                     >
-                      <span className="px-1">{"₹"}</span>
+                      <span className="px-1">{"$"}</span>
                       {data?.totalCost && data?.totalCost?.toFixed(2)}
                     </span>
                   </div>

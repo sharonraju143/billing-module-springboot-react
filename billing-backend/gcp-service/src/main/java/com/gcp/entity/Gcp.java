@@ -35,7 +35,7 @@ public class Gcp {
 	@Field("Service description")
 	private String serviceDescription;
 	
-	@Field("Cost (₹)")
+	@Field("Cost ($)")
 	private double cost;
 
 }
