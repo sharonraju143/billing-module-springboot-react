@@ -1,6 +1,6 @@
 import axios from "axios";
  
-const BASE_URL = "http://localhost:8080"; // Assuming the base URL is the same for all endpoints
+const BASE_URL = "http://172.20.100.7:8080"; // Assuming the base URL is the same for all endpoints
  
 const getAuthHeaders = () => {
   const token = localStorage.getItem("token");
